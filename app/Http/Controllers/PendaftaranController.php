@@ -4,7 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Models\Pendaftaran;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 
 class PendaftaranController extends Controller
 {
@@ -16,184 +21,278 @@ class PendaftaranController extends Controller
         return view('pendaftaran');
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
     public function store(Request $request)
     {
-        // 🔥 VALIDASI
-        $validated = $request->validate([
-            // DATA UTAMA
+        // Validasi input
+        $validator = Validator::make($request->all(), [
+            'asal_sd_mi' => 'required|string|max:255',
+            'jalur_pendaftaran' => 'required|in:domisili,afirmasi,prestasi_akademik,prestasi_non_akademik,mutasi',
             'nama_lengkap' => 'required|string|max:255',
-            'nisn' => 'required|digits:10',
+            'jenis_kelamin' => 'required|in:Laki-laki,Perempuan',
+            'nisn' => 'required|string|size:10|unique:pendaftaran,nisn',
             'tempat_lahir' => 'required|string|max:100',
             'tanggal_lahir' => 'required|date',
-            'jenis_kelamin' => 'required',
-            'umur' => 'required|integer|min:12|max:18',
-            'asal_sekolah' => 'required|string',
-            'alamat_lengkap' => 'required|string',
-            'email' => 'nullable|email',
-            'no_hp' => 'nullable|string',
-            'jalur_pendaftaran' => 'required',
-
-            // DOKUMEN WAJIB
-            'ijazah_skl' => 'required|file|mimes:pdf,jpg,jpeg,png|max:2048',
-            'akta_kelahiran' => 'required|file|mimes:pdf,jpg,jpeg,png|max:2048',
+            'agama' => 'required|in:Islam,Kristen,Katolik,Hindu,Budha,Konghucu',
+            'alamat_lengkap' => 'required|string|max:500',
+            'titik_koordinat' => 'required|string|max:50',
+            'jarak_rumah' => 'required|numeric|min:0|max:50000',
+            'no_hp_siswa' => 'required|string|regex:/^08[0-9]{8,12}$/',
+            'tinggi_badan' => 'required|numeric|min:100|max:200',
+            'berat_badan' => 'required|numeric|min:20|max:100',
+            'lingkar_kepala' => 'required|numeric|min:40|max:60',
+            'anak_ke' => 'required|integer|min:1|max:20',
+            'jumlah_saudara' => 'required|integer|min:0|max:20',
+            'memiliki_kip' => 'required|in:Ya,Tidak',
+            'nilai_bindo' => 'required|numeric|min:0|max:1000',
+            'nilai_matematika' => 'required|numeric|min:0|max:1000',
+            'nilai_ipa' => 'required|numeric|min:0|max:1000',
+            'jumlah_nilai' => 'required|numeric|min:0|max:3000',
+            'nama_ayah' => 'required|string|max:255',
+            'nama_ibu' => 'required|string|max:255',
+            'no_hp_orang_tua' => 'required|string|regex:/^08[0-9]{8,12}$/',
+            
+            // Dokumen (max 2MB)
             'kartu_keluarga' => 'required|file|mimes:pdf,jpg,jpeg,png|max:2048',
-            'ktp_orang_tua' => 'required|file|mimes:pdf,jpg,jpeg,png|max:2048',
-            'sptjm' => 'required|file|mimes:pdf,jpg,jpeg,png|max:2048',
-            'ijazah_madrasah' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
+            'screenshot_jarak' => 'required|file|mimes:jpg,jpeg,png|max:2048',
+            'kartu_kip' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
+            'sertifikat_kejuaraan' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
+            
+            // Prestasi (khusus jalur tertentu)
+            'event_kejuaraan' => 'nullable|required_if:jalur_pendaftaran,prestasi_non_akademik|string|max:255',
+            'tingkat_kejuaraan' => 'nullable|required_if:jalur_pendaftaran,prestasi_non_akademik|string|max:50',
+            'peringkat' => 'nullable|required_if:jalur_pendaftaran,prestasi_non_akademik|string|max:50',
+        ], [
+            'nisn.unique' => '❌ NISN sudah terdaftar! Gunakan NISN lain.',
+            'no_hp_siswa.regex' => '❌ No. HP harus format 08xxxxxxxxxx',
+            'no_hp_orang_tua.regex' => '❌ No. HP Orang Tua harus format 08xxxxxxxxxx',
+            'kartu_keluarga.required' => '❌ Upload Kartu Keluarga WAJIB!',
+            'screenshot_jarak.required' => '❌ Screenshot jarak Google Maps WAJIB!',
+            'kartu_keluarga.file' => '❌ File KK harus PDF/JPG/PNG (max 2MB)',
+            'jumlah_nilai.max' => '❌ Jumlah nilai maksimal 3000!',
+            'nisn.size' => '❌ NISN harus 10 digit angka!',
+            'tanggal_lahir.date' => '❌ Format tanggal lahir salah!',
         ]);
 
-        // 🔥 TAMBAHAN VALIDASI BERDASARKAN JALUR
-        switch ($request->jalur_pendaftaran) {
-            case 'zonasi':
-                $request->validate([
-                    'latitude' => 'required',
-                    'longitude' => 'required',
-                    'screenshot_jarak' => 'required|image|max:2048'
-                ]);
-                break;
-
-            case 'afirmasi':
-                $request->validate([
-                    'kartu_bansos_sktm' => 'required|file|max:2048',
-                    'surat_tanggung_jawab' => 'required|file|max:2048',
-                ]);
-                break;
-
-            case 'prestasi':
-                $request->validate([
-                    'rapor_5_semester' => 'required|file|max:2048',
-                    'surat_peringkat' => 'required|file|max:2048',
-                    'sertifikat_piagam.*' => 'required|file|max:2048',
-                ]);
-                break;
-
-            case 'perpindahan':
-                $request->validate([
-                    'surat_pindah_tugas' => 'required|file|max:2048',
-                ]);
-                break;
+        // 🔥 ALERT VALIDASI - KUMPULKAN SEMUA ERROR
+        if ($validator->fails()) {
+            $errors = $validator->errors()->all();
+            $errorMessage = "❌ **VALIDASI GAGAL**:\n\n";
+            
+            // Grup error berdasarkan kategori
+            $errorGroups = [
+                'Dokumen' => [],
+                'Data Pribadi' => [],
+                'Nilai Raport' => [],
+                'Orang Tua' => [],
+                'Lainnya' => []
+            ];
+            
+            foreach ($errors as $error) {
+                if (stripos($error, 'kartu') !== false || stripos($error, 'screenshot') !== false || stripos($error, 'file') !== false) {
+                    $errorGroups['Dokumen'][] = $error;
+                } elseif (stripos($error, 'nisn') !== false || stripos($error, 'tanggal') !== false || stripos($error, 'nama') !== false) {
+                    $errorGroups['Data Pribadi'][] = $error;
+                } elseif (stripos($error, 'nilai') !== false || stripos($error, 'jumlah') !== false) {
+                    $errorGroups['Nilai Raport'][] = $error;
+                } elseif (stripos($error, 'ayah') !== false || stripos($error, 'ibu') !== false || stripos($error, 'orang tua') !== false) {
+                    $errorGroups['Orang Tua'][] = $error;
+                } else {
+                    $errorGroups['Lainnya'][] = $error;
+                }
+            }
+            
+            // Buat pesan alert yang rapi
+            foreach ($errorGroups as $kategori => $errList) {
+                if (!empty($errList)) {
+                    $errorMessage .= "📁 **$kategori**:\n" . implode("\n", $errList) . "\n\n";
+                }
+            }
+            
+            return response()->json([
+                'success' => false,
+                'message' => $errorMessage,
+                'errors' => $errors,
+                'alert_type' => 'error'
+            ], 422);
         }
 
-        // 🔥 GENERATE NO PENDAFTARAN
-        $no_pendaftaran = 'PPDB-' . strtoupper(Str::random(6));
-
-        // 🔥 FUNGSI SIMPAN FILE
-        function uploadFile($file, $folder)
-        {
-            if (!$file) return null;
-
-            $name = time() . '_' . $file->getClientOriginalName();
-            return $file->storeAs($folder, $name, 'public');
+        // 🔥 VALIDASI KOORDINAT GPS
+        $koordinat = array_map('trim', explode(',', $request->titik_koordinat));
+        if (count($koordinat) !== 2 || !is_numeric($koordinat[0]) || !is_numeric($koordinat[1])) {
+            return response()->json([
+                'success' => false,
+                'message' => '❌ **Koordinat GPS salah!**\n\nContoh benar:\n`-6.873307,108.494803`\n\n(Tanpa spasi setelah koma)',
+                'alert_type' => 'error'
+            ], 422);
         }
 
-        // 🔥 UPLOAD FILE WAJIB
-        $files = [
-            'ijazah_skl' => uploadFile($request->file('ijazah_skl'), 'ppdb/ijazah'),
-            'akta_kelahiran' => uploadFile($request->file('akta_kelahiran'), 'ppdb/akta'),
-            'kartu_keluarga' => uploadFile($request->file('kartu_keluarga'), 'ppdb/kk'),
-            'ktp_orang_tua' => uploadFile($request->file('ktp_orang_tua'), 'ppdb/ktp'),
-            'sptjm' => uploadFile($request->file('sptjm'), 'ppdb/sptjm'),
-            'ijazah_madrasah' => uploadFile($request->file('ijazah_madrasah'), 'ppdb/madrasah'),
-        ];
-
-        // 🔥 FILE JALUR
-        $jalurFiles = [];
-
-        if ($request->jalur_pendaftaran == 'zonasi') {
-            $jalurFiles['screenshot_jarak'] = uploadFile($request->file('screenshot_jarak'), 'ppdb/zonasi');
+        // 🔥 VALIDASI PENJUMLAHAN NILAI
+        $totalManual = (float) $request->jumlah_nilai;
+        $totalAuto = (float) $request->nilai_bindo + (float) $request->nilai_matematika + (float) $request->nilai_ipa;
+        
+        if (abs($totalManual - $totalAuto) > 0.01) {
+            return response()->json([
+                'success' => false,
+                'message' => "❌ **Penjumlahan nilai salah!**\n\n" .
+                            "Manual: {$totalManual}\n" .
+                            "Otomatis: {$totalAuto}\n\n" .
+                            "Periksa kembali nilai B.Indonesia + Matematika + IPA",
+                'alert_type' => 'error'
+            ], 422);
         }
 
-        if ($request->jalur_pendaftaran == 'afirmasi') {
-            $jalurFiles['kartu_bansos_sktm'] = uploadFile($request->file('kartu_bansos_sktm'), 'ppdb/afirmasi');
-            $jalurFiles['surat_tanggung_jawab'] = uploadFile($request->file('surat_tanggung_jawab'), 'ppdb/afirmasi');
-        }
-
-        if ($request->jalur_pendaftaran == 'prestasi') {
-            $jalurFiles['rapor'] = uploadFile($request->file('rapor_5_semester'), 'ppdb/prestasi');
-            $jalurFiles['peringkat'] = uploadFile($request->file('surat_peringkat'), 'ppdb/prestasi');
-
-            if ($request->hasFile('sertifikat_piagam')) {
-                foreach ($request->file('sertifikat_piagam') as $file) {
-                    $jalurFiles['sertifikat'][] = uploadFile($file, 'ppdb/prestasi');
+        // 🔥 VALIDASI JALUR PRESTASI
+        if ($request->jalur_pendaftaran === 'prestasi_non_akademik') {
+            $prestasiRequired = ['event_kejuaraan', 'tingkat_kejuaraan', 'peringkat'];
+            foreach ($prestasiRequired as $field) {
+                if (empty($request->$field)) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => '❌ **Jalur Prestasi Non Akademik**:\nSemua data prestasi (Event, Tingkat, Peringkat) WAJIB diisi!',
+                        'alert_type' => 'error'
+                    ], 422);
                 }
             }
         }
 
-        if ($request->jalur_pendaftaran == 'perpindahan') {
-            $jalurFiles['surat_pindah'] = uploadFile($request->file('surat_pindah_tugas'), 'ppdb/perpindahan');
+        DB::beginTransaction();
+        try {
+            // Generate UUID unik
+            $uuid = 'SMP1CIL-' . strtoupper(Str::random(6));
+
+            // Upload dokumen
+            $dokumen = $this->uploadDokumen($request);
+
+            // Simpan data pendaftaran
+            $pendaftaran = Pendaftaran::create([
+                'uuid' => $uuid,
+
+                // IDENTITAS
+                'asal_sd_mi' => $request->asal_sd_mi,
+                'jalur_pendaftaran' => $request->jalur_pendaftaran,
+                'nama_lengkap' => $request->nama_lengkap,
+                'jenis_kelamin' => $request->jenis_kelamin,
+                'nisn' => $request->nisn,
+                'tempat_lahir' => $request->tempat_lahir,
+                'tanggal_lahir' => $request->tanggal_lahir,
+                'pernah_paud' => $request->has('pernah_paud'),
+                'pernah_tk' => $request->has('pernah_tk'),
+                'tidak_pernah_paud_tk' => $request->has('tidak_pernah'),
+                'hobby' => $request->hobby,
+                'cita_cita' => $request->cita_cita,
+                'tinggi_badan' => $request->tinggi_badan,
+                'berat_badan' => $request->berat_badan,
+                'lingkar_kepala' => $request->lingkar_kepala,
+                'anak_ke' => $request->anak_ke,
+                'jumlah_saudara' => $request->jumlah_saudara,
+                'memiliki_kip' => $request->memiliki_kip,
+
+                // ALAMAT
+                'agama' => $request->agama,
+                'alamat_lengkap' => $request->alamat_lengkap,
+                'titik_koordinat' => $request->titik_koordinat,
+                'jarak_rumah' => $request->jarak_rumah,
+                'no_hp_siswa' => $request->no_hp_siswa,
+                'email_siswa' => $request->email_siswa,
+                'sosmed' => json_encode($request->sosmed),
+
+                // DOKUMEN
+                'kartu_kip' => $dokumen['kartu_kip'] ?? null,
+                'screenshot_jarak' => $dokumen['screenshot_jarak'] ?? null,
+                'kartu_keluarga' => $dokumen['kartu_keluarga'] ?? null,
+
+                // NILAI
+                'nilai_bindo' => $request->nilai_bindo,
+                'nilai_matematika' => $request->nilai_matematika,
+                'nilai_ipa' => $request->nilai_ipa,
+                'jumlah_nilai' => $request->jumlah_nilai,
+
+                // PRESTASI (🔥 pakai nama baru!)
+                'event_kejuaraan' => $request->event_kejuaraan,
+                'tingkat_kejuaraan' => $request->tingkat_kejuaraan,
+                'peringkat_kejuaraan' => $request->peringkat_kejuaraan,
+                'penyelenggara' => $request->penyelenggara,
+                'sertifikat_kejuaraan' => $dokumen['sertifikat_kejuaraan'] ?? null,
+
+                // ORANG TUA
+                'nama_ayah' => $request->nama_ayah,
+                'tempat_lahir_ayah' => $request->tempat_lahir_ayah,
+                'tanggal_lahir_ayah' => $request->tanggal_lahir_ayah,
+                'agama_ayah' => $request->agama_ayah,
+                'pekerjaan_ayah' => $request->pekerjaan_ayah,
+                'pendidikan_ayah' => $request->pendidikan_ayah,
+
+                'nama_ibu' => $request->nama_ibu,
+                'tempat_lahir_ibu' => $request->tempat_lahir_ibu,
+                'tanggal_lahir_ibu' => $request->tanggal_lahir_ibu,
+                'pekerjaan_ibu' => $request->pekerjaan_ibu,
+                'pendidikan_ibu' => $request->pendidikan_ibu,
+
+                'alamat_orang_tua' => $request->alamat_orang_tua,
+                'no_hp_orang_tua' => $request->no_hp_orang_tua,
+            ]);
+
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'message' => "🎉 **PENDAFTARAN BERHASIL!**\n\n" .
+                            "No. Pendaftaran: **{$uuid}**\n" .
+                            "Nama: {$request->nama_lengkap}\n" .
+                            "NISN: {$request->nisn}\n\n" .
+                            "✅ Simpan nomor ini untuk tracking!\n" .
+                            "📧 Cek email untuk konfirmasi.",
+                'data' => [
+                    'no_pendaftaran' => $uuid,
+                    'nama' => $request->nama_lengkap,
+                    'nisn' => $request->nisn,
+                ],
+                'alert_type' => 'success'
+            ]);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('PPDB Store Error: ' . $e->getMessage());
+            
+            return response()->json([
+                'success' => false,
+                'message' => '❌ **Sistem Error!**\n\nMohon coba lagi atau hubungi admin.',
+                'alert_type' => 'error'
+            ], 500);
+        }
+    }
+
+    private function uploadDokumen(Request $request)
+    {
+        $dokumen = [];
+        $path = 'ppdb/smpn1-cilimus/' . date('Y/m/d');
+
+        if ($request->hasFile('kartu_keluarga')) {
+            $dokumen['kartu_keluarga'] = $request->file('kartu_keluarga')
+                ->store($path, 'public');
         }
 
-        // 🔥 SIMPAN KE DATABASE
-        $data = [
-            'no_pendaftaran' => $no_pendaftaran,
-            'nama_lengkap' => $request->nama_lengkap,
-            'nisn' => $request->nisn,
-            'tempat_lahir' => $request->tempat_lahir,
-            'tanggal_lahir' => $request->tanggal_lahir,
-            'jenis_kelamin' => $request->jenis_kelamin,
-            'umur' => $request->umur,
-            'asal_sekolah' => $request->asal_sekolah,
-            'alamat_lengkap' => $request->alamat_lengkap,
-            'email' => $request->email,
-            'no_hp' => $request->no_hp,
-            'jalur_pendaftaran' => $request->jalur_pendaftaran,
+        if ($request->hasFile('screenshot_jarak')) {
+            $dokumen['screenshot_jarak'] = $request->file('screenshot_jarak')
+                ->store($path, 'public');
+        }
 
-            // lokasi zonasi
-            'latitude' => $request->latitude,
-            'longitude' => $request->longitude,
+        if ($request->hasFile('kartu_kip')) {
+            $dokumen['kartu_kip'] = $request->file('kartu_kip')
+                ->store($path, 'public');
+        }
 
-            // file
-            'files' => json_encode($files),
-            'jalur_files' => json_encode($jalurFiles),
-        ];
+        if ($request->hasFile('sertifikat_kejuaraan')) {
+            $dokumen['sertifikat_kejuaraan'] = $request->file('sertifikat_kejuaraan')
+                ->store($path, 'public');
+        }
 
-        // contoh pakai model
-        Pendaftaran::create($data);
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Pendaftaran berhasil',
-            'no_pendaftaran' => $no_pendaftaran
-        ]);
+        return $dokumen;
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
+    private function kirimEmailKonfirmasi($pendaftaran, $uuid)
     {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
+        // Implementasi email menggunakan Mail facade
+        // Mail::to($pendaftaran->email_siswa)->send(new PendaftaranKonfirmasi($pendaftaran, $uuid));
     }
 }
