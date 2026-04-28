@@ -5,9 +5,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return view('welcome');
-});
-Route::get('/form', function () {
-    return view('form');
-});
+})->name('index');
 
-Route::post('/pendaftaran', [PendaftaranController::class, 'store'])->name('pendaftaran.store');
+
+Route::resource("/pendaftaran", PendaftaranController::class);
