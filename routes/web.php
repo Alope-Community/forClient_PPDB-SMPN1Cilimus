@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\PendaftaranController as AdminPendaftaranController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\PendaftaranController;
@@ -42,9 +43,7 @@ Route::prefix('admin')
             return view('admin.dashboard');
         })->name('dashboard');
 
-        Route::get('/pendaftar', function () {
-            return view('admin.pendaftar');
-        })->name('pendaftar');
+        Route::resource('/pendaftar', AdminPendaftaranController::class);
     });
 
 

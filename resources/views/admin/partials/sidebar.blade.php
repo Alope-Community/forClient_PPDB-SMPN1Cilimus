@@ -8,7 +8,7 @@
             </a>
         </li>
         <li class="nav-item">
-            <a href="{{ route('admin.pendaftar') }}" class="nav-link text-white">
+            <a href="{{ route('admin.pendaftar.index') }}" class="nav-link text-white">
                 Pendaftar
             </a>
         </li>
