@@ -10,7 +10,10 @@ return new class extends Migration
     {
         Schema::create('pendaftaran', function (Blueprint $table) {
             $table->id();
-            $table->string('uuid')->unique(); // No pendaftaran unik
+            $table->string('uuid')->unique();
+            $table->foreignId('user_id')
+                ->constrained('users')
+                ->onDelete('cascade');
             
             // === IDENTITAS CALON PESERTA DIDIK (1-17) ===
             $table->string('asal_sd_mi');

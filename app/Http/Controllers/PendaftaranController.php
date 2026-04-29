@@ -3,8 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\Pendaftaran;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
@@ -157,6 +160,16 @@ class PendaftaranController extends Controller
 
         DB::beginTransaction();
         try {
+
+            $tanggal = Carbon::parse($request->tanggal_lahir)->format('dmY');
+            $password = $request->tempat_lahir . $tanggal;
+
+            $user = User::create([
+                "name" => $request->nama_lengkap,
+                "username" => $request->nisn,
+                "password" => Hash::make($password),
+            ]);
+
             // Generate UUID unik
             $uuid = 'SMP1CIL-' . strtoupper(Str::random(6));
 
@@ -166,6 +179,7 @@ class PendaftaranController extends Controller
             // Simpan data pendaftaran
             $pendaftaran = Pendaftaran::create([
                 'uuid' => $uuid,
+                'user_id' => $user->id,
 
                 // IDENTITAS
                 'asal_sd_mi' => $request->asal_sd_mi,
