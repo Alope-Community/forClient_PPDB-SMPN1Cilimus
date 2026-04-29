@@ -9,7 +9,7 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav ms-auto">
-                <li class="nav-item">
+                {{-- <li class="nav-item">
                     <a class="nav-link" href="{{ route('index') }}">Beranda</a>
                 </li>
                 <li class="nav-item">
@@ -17,13 +17,18 @@
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="#jadwal">Jadwal</a>
-                </li>
+                </li> --}}
                 {{-- <li class="nav-item">
                     <a class="nav-link" href="#kontak">Kontak</a>
                 </li> --}}
                 <li class="nav-item ms-3">
                     <a class="btn btn-warning btn-sm px-4 py-2 fw-semibold" href="{{ route('pendaftaran.index') }}">
                         <i class="fas fa-file-alt me-1"></i>Daftar Sekarang
+                    </a>
+                </li>
+                <li class="nav-item ms-3">
+                    <a class="btn btn-warning btn-sm px-4 py-2 fw-semibold" href="{{ route('auth.login') }}">
+                        <i class="fas fa-sign-in me-1"></i>Masuk
                     </a>
                 </li>
             </ul>
