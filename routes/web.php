@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\PendaftaranController;
+use App\Models\Pendaftaran;
 use Illuminate\Support\Facades\Auth;
 
 /*
@@ -49,11 +50,14 @@ Route::prefix('admin')
 
 Route::prefix('siswa')
     ->name('siswa.')
-    ->middleware('auth') // ⬅️ wajib login
+    ->middleware('auth')
     ->group(function () {
 
         Route::get('/dashboard', function () {
-            return view('siswa.dashboard');
+
+            $pendaftaran = Pendaftaran::where('user_id', Auth::id())->first();
+
+            return view('siswa.dashboard', compact('pendaftaran'));
         })->name('dashboard');
     });
 
