@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('siswa.layouts.app')
 
 
 @section('title', 'PPDB - Beranda')

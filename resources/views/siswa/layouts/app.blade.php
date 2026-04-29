@@ -83,7 +83,7 @@
 <body>
 
     {{-- Navbar --}}
-    @include('partials.navbar')
+    @include('siswa.partials.navbar')
 
     @yield('content')
 
