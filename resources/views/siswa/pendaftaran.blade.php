@@ -107,7 +107,7 @@
                                     </div>
                                     <div class="col-lg-4">
                                         <label class="form-label fw-semibold fs-6 required">No. NISN</label>
-                                        <input type="text" class="form-control form-control-lg" name="nisn" maxlength="10" placeholder="'0088996777" required>
+                                        <input type="text" class="form-control form-control-lg" name="nisn" maxlength="10" placeholder="0088996777" required>
                                     </div>
                                     <div class="col-lg-8">
                                         <label class="form-label fw-semibold fs-6 required">Tempat Lahir</label>

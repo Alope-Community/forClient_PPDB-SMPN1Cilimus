@@ -31,11 +31,11 @@
                         <!-- Email -->
                         <div class="input-group mb-4">
                             <span class="input-group-text">
-                                <i class="fas fa-envelope"></i>
+                                <i class="fas fa-user"></i>
                             </span>
-                            <input type="email" class="form-control form-control-lg @error('email')is-invalid @enderror" 
-                                    id="email" name="email" placeholder="Email" required 
-                                    value="{{ old('email') }}" autofocus>
+                            <input type="username" class="form-control form-control-lg @error('username')is-invalid @enderror" 
+                                    id="username" name="username" placeholder="Username" required 
+                                    value="{{ old('username') }}" autofocus>
                         </div>
                         
                         <!-- Password -->

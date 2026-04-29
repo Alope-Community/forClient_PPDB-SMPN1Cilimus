@@ -64,6 +64,5 @@ Route::post('/logout', function () {
 | Resource (harus login juga)
 |--------------------------------------------------------------------------
 */
-Route::middleware('auth')->group(function () {
-    Route::resource('/pendaftaran', PendaftaranController::class);
-});
+
+Route::resource('/pendaftaran', PendaftaranController::class);

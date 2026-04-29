@@ -18,7 +18,7 @@ class PendaftaranController extends Controller
      */
     public function index()
     {
-        return view('pendaftaran');
+        return view('siswa.pendaftaran');
     }
 
     public function store(Request $request)
