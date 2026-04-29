@@ -27,7 +27,6 @@
                 </li>
                 @endguest
 
-                {{-- Jika SUDAH login --}}
                 @auth
                 <li class="nav-item dropdown ms-3">
                     <a class="btn btn-outline-primary btn-sm dropdown-toggle px-4 py-2 fw-semibold" href="#" role="button" data-bs-toggle="dropdown">
@@ -35,11 +34,27 @@
                     </a>
 
                     <ul class="dropdown-menu dropdown-menu-end">
+
+                        {{-- Jika ADMIN --}}
+                        @if(auth()->user()->role === 'admin')
                         <li>
                             <a href="{{ route('admin.dashboard') }}" class="dropdown-item">
-                                <i class="fas fa-box-alt me-2"></i>Dashboard
+                                <i class="fas fa-user-shield me-2"></i>Dashboard Admin
                             </a>
                         </li>
+                        @endif
+
+                        {{-- Jika SISWA --}}
+                        @if(auth()->user()->role === 'siswa')
+                        <li>
+                            <a href="{{ route('siswa.dashboard') }}" class="dropdown-item">
+                                <i class="fas fa-user-graduate me-2"></i>Dashboard Siswa
+                            </a>
+                        </li>
+                        @endif
+
+                        <li><hr class="dropdown-divider"></li>
+
                         <li>
                             <form action="{{ route('logout') }}" method="POST">
                                 @csrf

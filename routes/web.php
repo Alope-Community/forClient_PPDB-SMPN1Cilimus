@@ -46,6 +46,17 @@ Route::prefix('admin')
         })->name('pendaftar');
     });
 
+
+Route::prefix('siswa')
+    ->name('siswa.')
+    ->middleware('auth') // ⬅️ wajib login
+    ->group(function () {
+
+        Route::get('/dashboard', function () {
+            return view('siswa.dashboard');
+        })->name('dashboard');
+    });
+
 /*
 |--------------------------------------------------------------------------
 | Logout
