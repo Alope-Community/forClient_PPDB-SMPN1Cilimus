@@ -2,7 +2,7 @@
     <div class="container">
         <a class="navbar-brand text-primary fw-bold" href="#">
             <i class="fas fa-graduation-cap me-2"></i>
-            {{ config('app.name', 'SMK NEGERI 1') }}
+            {{ config('app.name') }}
         </a>
 
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
