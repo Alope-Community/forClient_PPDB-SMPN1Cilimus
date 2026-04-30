@@ -361,7 +361,7 @@
     <div class="modal fade" id="modalIdentitas" tabindex="-1">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
-                <form action="{{ route('auth.login', $pendaftaran->id) }}" method="POST">
+                <form action="{{ route('pendaftaran.update', $pendaftaran->id) }}" method="POST">
                 @csrf
                 @method('PUT')
 

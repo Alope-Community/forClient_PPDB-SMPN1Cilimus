@@ -309,4 +309,84 @@ class PendaftaranController extends Controller
         // Implementasi email menggunakan Mail facade
         // Mail::to($pendaftaran->email_siswa)->send(new PendaftaranKonfirmasi($pendaftaran, $uuid));
     }
+
+    public function update(Request $request, $id)
+    {
+        $pendaftaran = Pendaftaran::findOrFail($id);
+
+        // ========================
+        // VALIDASI (opsional)
+        // ========================
+        $request->validate([
+            'email_siswa' => 'nullable|email',
+            'nilai_bindo' => 'nullable|numeric',
+            'nilai_matematika' => 'nullable|numeric',
+            'nilai_ipa' => 'nullable|numeric',
+        ]);
+
+        // ========================
+        // DATA DASAR
+        // ========================
+        $data = $request->except([
+            'kartu_keluarga',
+            'kartu_kip',
+            'screenshot_jarak',
+            'sertifikat_kejuaraan'
+        ]);
+
+        // ========================
+        // CHECKBOX
+        // ========================
+        $data['pernah_paud'] = $request->has('pernah_paud') ? 1 : 0;
+        $data['pernah_tk'] = $request->has('pernah_tk') ? 1 : 0;
+        $data['tidak_pernah'] = $request->has('tidak_pernah') ? 1 : 0;
+
+        // ========================
+        // SOSMED
+        // ========================
+        $data['sosmed'] = json_encode($request->sosmed ?? []);
+
+        // ========================
+        // HITUNG NILAI
+        // ========================
+        $data['jumlah_nilai'] =
+            ($request->nilai_bindo ?? 0) +
+            ($request->nilai_matematika ?? 0) +
+            ($request->nilai_ipa ?? 0);
+
+        // ========================
+        // PRESTASI FILTER
+        // ========================
+        if (!in_array($request->jalur_pendaftaran, ['prestasi_akademik', 'prestasi_non_akademik'])) {
+            $data['event_kejuaraan'] = null;
+            $data['tingkat_kejuaraan'] = null;
+            $data['peringkat'] = null;
+            $data['penyelenggara'] = null;
+            $data['sertifikat_kejuaraan'] = null;
+        }
+
+        // ========================
+        // UPLOAD DOKUMEN (PAKAI FUNCTION KAMU)
+        // ========================
+        $dokumenBaru = $this->uploadDokumen($request);
+
+        // ========================
+        // HAPUS FILE LAMA (JIKA ADA FILE BARU)
+        // ========================
+        foreach ($dokumenBaru as $key => $fileBaru) {
+
+            if ($pendaftaran->$key && \Storage::disk('public')->exists($pendaftaran->$key)) {
+                \Storage::disk('public')->delete($pendaftaran->$key);
+            }
+
+            $data[$key] = $fileBaru;
+        }
+
+        // ========================
+        // UPDATE
+        // ========================
+        $pendaftaran->update($data);
+
+        return back()->with('success', 'Data berhasil diperbarui');
+    }
 }
