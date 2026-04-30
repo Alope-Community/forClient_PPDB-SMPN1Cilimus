@@ -1,6 +1,6 @@
 <nav class="navbar navbar-expand-lg navbar-light fixed-top py-3" id="mainNavbar">
     <div class="container">
-        <a class="navbar-brand text-primary fw-bold" href="#">
+        <a class="navbar-brand text-primary fw-bold" href="/">
             <i class="fas fa-graduation-cap me-2"></i>
             {{ config('app.name') }}
         </a>
@@ -66,7 +66,6 @@
                     </ul>
                 </li>
                 @endauth
-
             </ul>
         </div>
     </div>

@@ -83,7 +83,9 @@
 <body>
 
     {{-- Navbar --}}
-    @include('siswa.partials.navbar')
+    @if (!request()->routeIs('auth.login'))
+        @include('siswa.partials.navbar')
+    @endif
 
     @yield('content')
 

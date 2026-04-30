@@ -150,26 +150,26 @@
             <div class="col-lg-6 hero-content">
                 <h1 class="display-5 fw-bold mb-4 animate__animated animate__fadeInUp">
                     Penerimaan Siswa Baru <br>
-                    <span class="text-warning display-6 fw-bold">Tahun Ajaran 2025/2026</span>
+                    <span class="text-warning display-6 fw-bold">Tahun Ajaran 2026/2026</span>
                 </h1>
                 <p class="lead mb-5 animate__animated animate__fadeInUp animate__delay-1s">
-                    Wujudkan Masa Depan Cerahmu Bersama {{ config('app.name', 'SMK NEGERI 1') }}. 
+                    Wujudkan Masa Depan Cerahmu Bersama {{ config('app.name') }}. 
                     Daftar sekarang dan raih cita-citamu!
                 </p>
                 <div class="animate__animated animate__fadeInUp animate__delay-2s">
-                    <a href="#daftar" class="btn btn-lg btn-register me-3 mb-3">
+                    <a href="{{ route('pendaftaran.index') }}" class="btn btn-lg btn-register me-3 mb-3">
                         <i class="fas fa-rocket me-2"></i>
                         Daftar Online
                     </a>
-                    {{-- <a href="#jadwal" class="btn btn-outline-light btn-lg mb-3">
-                        <i class="fas fa-calendar-alt me-2"></i>
-                        Lihat Jadwal
-                    </a> --}}
                 </div>
             </div>
             <div class="col-lg-6 text-center">
-                <img src="/images/header-vector.png" 
-                        alt="Student" class="img-fluid rounded-4" style="object-fit: cover;">
+                <img 
+                    src="/images/header-vector.png" 
+                    alt="Student" 
+                    class="img-fluid rounded-4" 
+                    style="object-fit: cover;"
+                >
             </div>
         </div>
     </div>
@@ -241,7 +241,7 @@
 </section>
 
 {{-- Jadwal Section --}}
-<section id="jadwal" class="py-5 bg-light">
+{{-- <section id="jadwal" class="py-5 bg-light">
     <div class="container">
         <div class="row text-center mb-5">
             <div class="col-lg-8 mx-auto">
@@ -264,25 +264,25 @@
                         <tbody>
                             <tr class="table-primary">
                                 <td>Pendaftaran Online</td>
-                                <td>1 Jan - 28 Feb 2025</td>
+                                <td>1 Jan - 28 Feb 2026</td>
                                 <td>Registrasi & Upload Dokumen</td>
                                 <td><span class="badge bg-success">Dibuka</span></td>
                             </tr>
                             <tr class="table-warning">
                                 <td>Seleksi Administrasi</td>
-                                <td>1-7 Mar 2025</td>
+                                <td>1-7 Mar 2026</td>
                                 <td>Pengumuman Lolos Admin</td>
                                 <td><span class="badge bg-warning">Menunggu</span></td>
                             </tr>
                             <tr class="table-info">
                                 <td>Tes Tertulis</td>
-                                <td>15 Mar 2025</td>
+                                <td>15 Mar 2026</td>
                                 <td>Ujian Online</td>
                                 <td><span class="badge bg-secondary">Belum</span></td>
                             </tr>
                             <tr class="table-success">
                                 <td>Pengumuman Akhir</td>
-                                <td>25 Mar 2025</td>
+                                <td>25 Mar 2026</td>
                                 <td>Daftar Ulang</td>
                                 <td><span class="badge bg-secondary">Belum</span></td>
                             </tr>
@@ -292,7 +292,7 @@
             </div>
         </div>
     </div>
-</section>
+</section> --}}
 
 {{-- Registration Form --}}
 {{-- <section id="daftar" class="form-section">
@@ -358,23 +358,23 @@
             <div class="col-lg-4 mb-4">
                 <h5 class="fw-bold mb-3">Kontak Kami</h5>
                 <div>
-                    <p><i class="fas fa-map-marker-alt me-2"></i>Jl. Pendidikan No. 123, Jakarta</p>
+                    <p><i class="fas fa-map-marker-alt me-2"></i>Jl. Cilimus</p>
                     <p><i class="fas fa-phone me-2"></i>(021) 12345678</p>
-                    <p><i class="fas fa-envelope me-2"></i>ppdb@smknegeri1.sch.id</p>
+                    <p><i class="fas fa-envelope me-2"></i>ppdb@smp1cilimus.sch.id</p>
                 </div>
             </div>
             <div class="col-lg-4 mb-4">
                 <h5 class="fw-bold mb-3">Jadwal Penting</h5>
                 <ul class="list-unstyled">
-                    <li class="mb-2"><i class="fas fa-calendar-day me-2 text-primary"></i>Pendaftaran: 1 Jan 2025</li>
-                    <li class="mb-2"><i class="fas fa-calendar-day me-2 text-primary"></i>Seleksi: 15 Mar 2025</li>
-                    <li><i class="fas fa-calendar-day me-2 text-primary"></i>Pengumuman: 25 Mar 2025</li>
+                    <li class="mb-2"><i class="fas fa-calendar-day me-2 text-primary"></i>Pendaftaran: 1 Jan 2026</li>
+                    <li class="mb-2"><i class="fas fa-calendar-day me-2 text-primary"></i>Seleksi: 15 Mar 2026</li>
+                    <li><i class="fas fa-calendar-day me-2 text-primary"></i>Pengumuman: 25 Mar 2026</li>
                 </ul>
             </div>
         </div>
         <hr class="my-4">
                     <div class="text-center">
-            <p class="mb-0">&copy; 2025 {{ config('app.name', 'SMK NEGERI 1') }}. All rights reserved. | PPDB Online</p>
+            <p class="mb-0">&copy; 2026 {{ config('app.name', 'SMK NEGERI 1') }}. All rights reserved. | PPDB Online</p>
         </div>
     </div>
 </footer>

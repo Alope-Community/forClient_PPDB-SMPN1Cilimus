@@ -1,90 +1,134 @@
 @extends('siswa.layouts.app')
 
+@section('title', 'Login PPDB')
 
-@section('title', 'PPDB - Beranda')
+@section('content')
+<div class="container d-flex align-items-center justify-content-center" style="min-height: 100vh;">
+    <div class="col-lg-5 col-xl-4">
 
-@section("content")
-<div class="container">
-    <br>
-    <br>
-    <br>
-    <br>
-    <br>
-    <br>
-    <br>
-    <div class="row justify-content-center">
-        <div class="col-lg-5 col-xl-4">
-            <!-- Login Card -->
-            <div class="login-card">
-                <div class="login-header">
-                    <div class="logo-float mb-4">
-                        <i class="fas fa-shield-alt fa-4x opacity-75"></i>
+        <div class="card shadow-lg border-0 rounded-4">
+            <div class="card-body p-5">
+
+                <!-- Header -->
+                <div class="text-center mb-4">
+                    <div class="mb-3">
+                        <i class="fas fa-school fa-3x text-primary"></i>
                     </div>
-                    <h2 class="display-5 fw-bold mb-2">Login</h2>
-                    <p class="lead mb-0 opacity-90">PPDB SMPN 1 CILIMUS 2025/2026</p>
+                    <h4 class="fw-bold">Login PPDB</h4>
+                    <small class="text-muted">SMPN 1 Cilimus 2025/2026</small>
                 </div>
-                
+
+                <!-- FORM -->
                 <form id="loginForm" method="POST" action="{{ route('auth.authenticate') }}">
                     @csrf
-                    
-                    <div class="login-body mt-3">
-                        <!-- Email -->
-                        <div class="input-group mb-4">
+
+                    <!-- Username -->
+                    <div class="mb-3">
+                        <label class="form-label">Username</label>
+                        <div class="input-group">
                             <span class="input-group-text">
                                 <i class="fas fa-user"></i>
                             </span>
-                            <input type="username" class="form-control form-control-lg @error('username')is-invalid @enderror" 
-                                    id="username" name="username" placeholder="Username" required 
-                                    value="{{ old('username') }}" autofocus>
+                            <input type="text"
+                                   name="username"
+                                   id="username"
+                                   class="form-control @error('username') is-invalid @enderror"
+                                   placeholder="Masukkan username"
+                                   value="{{ old('username') }}"
+                                   required autofocus>
                         </div>
-                        
-                        <!-- Password -->
-                        <div class="input-group mb-4">
+                    </div>
+
+                    <!-- Password -->
+                    <div class="mb-3">
+                        <label class="form-label">Password</label>
+                        <div class="input-group">
                             <span class="input-group-text">
                                 <i class="fas fa-lock"></i>
                             </span>
-                            <input type="password" class="form-control form-control-lg @error('password')is-invalid @enderror" 
-                                    id="password" name="password" placeholder="Password" required>
+                            <input type="password"
+                                   name="password"
+                                   id="password"
+                                   class="form-control @error('password') is-invalid @enderror"
+                                   placeholder="Masukkan password"
+                                   required>
+
+                            <button type="button" class="btn btn-outline-secondary" id="togglePassword">
+                                <i class="fas fa-eye"></i>
+                            </button>
                         </div>
-                        
-                        <!-- Error Alert -->
-                        @if ($errors->any())
-                        <div class="alert alert-danger">
-                            <i class="fas fa-exclamation-triangle me-2"></i>
+                    </div>
+
+                    <!-- Error -->
+                    @if ($errors->any())
+                        <div class="alert alert-danger py-2">
                             {{ $errors->first() }}
                         </div>
-                        @endif
-                        
-                        <!-- Submit Button -->
-                        <button type="submit" class="btn btn-primary btn-lg w-100 mb-3">
+                    @endif
+
+                    <!-- Button -->
+                    <div class="d-grid mb-3">
+                        <button type="submit" class="btn btn-primary" id="loginBtn">
                             <i class="fas fa-sign-in-alt me-2"></i>
-                            Masuk Dashboard
+                            Masuk
                         </button>
                     </div>
+
+                    
+                    <!-- Back -->
+                    <div class="text-center">
+                        <a href="/" class="text-decoration-none">
+                            ← Kembali ke Beranda
+                        </a>
+                    </div>
+                    
+                    <hr>
+
+                    <!-- Register -->
+                    <div class="text-center mt-3">
+                        <small class="text-muted">
+                            Belum punya akun?
+                        </small>
+                        <br>
+                        <a href="{{ route('pendaftaran.index') }}" class="fw-semibold text-decoration-none">
+                            Daftar sekarang
+                        </a>
+                    </div>
                 </form>
+
             </div>
         </div>
+
     </div>
 </div>
 @endsection
 
-    
-@push("scripts")
+@push('scripts')
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Password toggle
-    const passwordInput = document.getElementById('password');
-    const emailInput = document.getElementById('email');
-    
-    // Focus effect
-    emailInput.focus();
-    
-    // Form submit loading
-    document.getElementById('loginForm').addEventListener('submit', function() {
-        const btn = this.querySelector('button[type="submit"]');
+document.addEventListener('DOMContentLoaded', function () {
+
+    const password = document.getElementById('password');
+    const toggle = document.getElementById('togglePassword');
+    const form = document.getElementById('loginForm');
+    const btn = document.getElementById('loginBtn');
+
+    // Toggle password
+    toggle.addEventListener('click', function () {
+        if (password.type === 'password') {
+            password.type = 'text';
+            this.innerHTML = '<i class="fas fa-eye-slash"></i>';
+        } else {
+            password.type = 'password';
+            this.innerHTML = '<i class="fas fa-eye"></i>';
+        }
+    });
+
+    // Loading submit
+    form.addEventListener('submit', function () {
         btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Masuk...';
         btn.disabled = true;
     });
+
 });
 </script>
 @endpush
