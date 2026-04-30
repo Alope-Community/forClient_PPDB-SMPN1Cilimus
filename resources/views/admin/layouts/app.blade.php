@@ -6,14 +6,20 @@
     <title>@yield('title', 'Dashboard')</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
     <style>
         body {
             font-family: 'Poppins', sans-serif;
         }
+        nav {
+            /* height: 100vh; */
+            background-color: #5b0e7f;
+            color: #fff !important;
+        }
         .sidebar {
             height: 100vh;
-            background-color: #5b0e7f;
+            background-color: #333;
             color: #fff;
         }
         .sidebar a {
@@ -24,13 +30,16 @@
             background-color: #4a0c69;
             display: block;
         }
+        .bg-primary{
+            background-color: #5b0e7f !important;
+        }
     </style>
 
     @stack('styles')
 </head>
 <body>
 
-    @include('admin.partials.navbar')
+    {{-- @include('admin.partials.navbar') --}}
 
     <div class="container-fluid">
         <div class="row">
@@ -39,7 +48,37 @@
             </div>
 
             <div class="col-md-10 p-4">
+
+                <!-- PAGE HEADER -->
+                {{-- <div class="card border-0 shadow-sm mb-4 bg-primary">
+                    <div class="card-body d-flex justify-content-between align-items-center">
+
+                        <div>
+                            <h4 class="fw-bold mb-1 text-white">@yield('page_title', 'Dashboard')</h4>
+                            <nav aria-label="breadcrumb">
+                                <ol class="breadcrumb mb-0 small">
+                                    <li class="breadcrumb-item">
+                                        <a href="{{ route('admin.dashboard') }}" class="text-decoration-none">
+                                            Admin PPDB
+                                        </a>
+                                    </li>
+                                    <li class="breadcrumb-item active text-white">
+                                        @yield('page_title', 'Dashboard')
+                                    </li>
+                                </ol>
+                            </nav>
+                        </div>
+
+                        <div>
+                            @yield('page_action')
+                        </div>
+
+                    </div>
+                </div> --}}
+
+                <!-- CONTENT -->
                 @yield('content')
+
             </div>
         </div>
     </div>

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\PendaftaranController as AdminPendaftaranController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
@@ -39,9 +40,7 @@ Route::prefix('admin')
     ->middleware('auth') // ⬅️ wajib login
     ->group(function () {
 
-        Route::get('/dashboard', function () {
-            return view('admin.dashboard');
-        })->name('dashboard');
+        Route::get('/dashboard', DashboardController::class)->name('dashboard');
 
         Route::resource('/pendaftar', AdminPendaftaranController::class);
     });
