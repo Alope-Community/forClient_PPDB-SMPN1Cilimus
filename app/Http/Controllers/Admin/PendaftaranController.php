@@ -71,7 +71,6 @@ class PendaftaranController extends Controller
 
         $pendaftaran->status = $request->status;
 
-        // optional tracking
         if ($request->status == 'approved') {
             $pendaftaran->approved_at = now();
         }

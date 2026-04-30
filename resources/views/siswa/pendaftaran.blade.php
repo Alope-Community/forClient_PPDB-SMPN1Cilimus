@@ -486,171 +486,169 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-    document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function() {
 
-        const form = document.getElementById('ppdbForm');
-        const steps = document.querySelectorAll('.step');
-        const progressBar = document.getElementById('progressBar');
-        const jalurSelect = document.getElementById('jalurSelect');
+            const form = document.getElementById('ppdbForm');
+            const steps = document.querySelectorAll('.step');
+            const progressBar = document.getElementById('progressBar');
+            const jalurSelect = document.getElementById('jalurSelect');
 
-        let currentStep = 1;
+            let currentStep = 1;
 
-        // =========================
-        // INIT STEP
-        // =========================
-        steps.forEach((step, index) => {
-            step.style.display = index === 0 ? 'block' : 'none';
-        });
+            // =========================
+            // INIT STEP
+            // =========================
+            steps.forEach((step, index) => {
+                step.style.display = index === 0 ? 'block' : 'none';
+            });
 
-        // =========================
-        // HITUNG NILAI
-        // =========================
-        function calculateJumlahNilai() {
-            const bindo = parseFloat(document.querySelector('[name="nilai_bindo"]')?.value) || 0;
-            const mtk   = parseFloat(document.querySelector('[name="nilai_matematika"]')?.value) || 0;
-            const ipa   = parseFloat(document.querySelector('[name="nilai_ipa"]')?.value) || 0;
+            // =========================
+            // HITUNG NILAI
+            // =========================
+            function calculateJumlahNilai() {
+                const bindo = parseFloat(document.querySelector('[name="nilai_bindo"]')?.value) || 0;
+                const mtk   = parseFloat(document.querySelector('[name="nilai_matematika"]')?.value) || 0;
+                const ipa   = parseFloat(document.querySelector('[name="nilai_ipa"]')?.value) || 0;
 
-            document.getElementById('jumlah_nilai').value = (bindo + mtk + ipa).toFixed(2);
-        }
-
-        document.querySelectorAll('[name="nilai_bindo"], [name="nilai_matematika"], [name="nilai_ipa"]')
-            .forEach(i => i.addEventListener('input', calculateJumlahNilai));
-
-        // =========================
-        // JALUR PRESTASI
-        // =========================
-        jalurSelect.addEventListener('change', function() {
-            const prestasi = document.querySelector('.jalur-prestasi');
-
-            if (this.value === 'prestasi_non_akademik') {
-                prestasi.style.display = 'block';
-
-                // 🔥 aktifkan required
-                prestasi.querySelectorAll('input, select').forEach(i => {
-                    i.setAttribute('required', 'required');
-                });
-
-            } else {
-                prestasi.style.display = 'none';
-
-                // 🔥 hilangkan required + kosongkan
-                prestasi.querySelectorAll('input, select').forEach(i => {
-                    i.removeAttribute('required');
-                    i.value = '';
-                });
+                document.getElementById('jumlah_nilai').value = (bindo + mtk + ipa).toFixed(2);
             }
-        });
 
-        // =========================
-        // VALIDASI STEP
-        // =========================
-        function validateStep(stepIndex) {
-            const currentForm = steps[stepIndex - 1];
-            const inputs = currentForm.querySelectorAll('input, select, textarea');
+            document.querySelectorAll('[name="nilai_bindo"], [name="nilai_matematika"], [name="nilai_ipa"]')
+                .forEach(i => i.addEventListener('input', calculateJumlahNilai));
 
-            let valid = true;
+            // =========================
+            // JALUR PRESTASI
+            // =========================
+            jalurSelect.addEventListener('change', function() {
+                const prestasi = document.querySelector('.jalur-prestasi');
 
-            inputs.forEach(input => {
-                if (input.offsetParent === null) return;
+                if (this.value === 'prestasi_non_akademik') {
+                    prestasi.style.display = 'block';
 
-                if (input.hasAttribute('required') && !input.checkValidity()) {
-                    input.reportValidity();
-                    valid = false;
-                }
-            });
-
-            return valid;
-        }
-
-        // =========================
-        // NAVIGASI STEP
-        // =========================
-        document.querySelectorAll('.next-step').forEach(btn => {
-            btn.addEventListener('click', () => {
-                if (!validateStep(currentStep)) return;
-
-                steps[currentStep - 1].style.display = 'none';
-                currentStep++;
-                steps[currentStep - 1].style.display = 'block';
-                updateProgress();
-            });
-        });
-
-        document.querySelectorAll('.prev-step').forEach(btn => {
-            btn.addEventListener('click', () => {
-                steps[currentStep - 1].style.display = 'none';
-                currentStep--;
-                steps[currentStep - 1].style.display = 'block';
-                updateProgress();
-            });
-        });
-
-        function updateProgress() {
-            progressBar.style.width = (currentStep / steps.length) * 100 + '%';
-        }
-
-        // =========================
-        // SUBMIT AJAX (🔥 INI KUNCI)
-        // =========================
-        form.addEventListener('submit', async function(e) {
-            e.preventDefault();
-
-            if (!validateStep(currentStep)) return;
-
-            const btn = form.querySelector('button[type="submit"]');
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Mengirim...';
-            btn.disabled = true;
-
-            try {
-                const res = await fetch(form.action, {
-                    method: 'POST',
-                    body: new FormData(form),
-                    headers: {
-                        'X-CSRF-TOKEN': document.querySelector('[name=_token]').value
-                    }
-                });
-
-                const data = await res.json();
-
-                if (data.success) {
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Berhasil',
-                        html: data.message
-                    }).then(() => {
-                        form.reset();
-                        location.reload();
+                    prestasi.querySelectorAll('input, select').forEach(i => {
+                        i.setAttribute('required', 'required');
                     });
 
                 } else {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Gagal',
-                        html: data.message
+                    prestasi.style.display = 'none';
+
+                    prestasi.querySelectorAll('input, select').forEach(i => {
+                        i.removeAttribute('required');
+                        i.value = '';
                     });
                 }
+            });
 
-            } catch (err) {
-                Swal.fire('Error', 'Server bermasalah', 'error');
+            // =========================
+            // VALIDASI STEP
+            // =========================
+            function validateStep(stepIndex) {
+                const currentForm = steps[stepIndex - 1];
+                const inputs = currentForm.querySelectorAll('input, select, textarea');
+
+                let valid = true;
+
+                inputs.forEach(input => {
+                    if (input.offsetParent === null) return;
+
+                    if (input.hasAttribute('required') && !input.checkValidity()) {
+                        input.reportValidity();
+                        valid = false;
+                    }
+                });
+
+                return valid;
             }
 
-            btn.innerHTML = '<i class="fas fa-paper-plane"></i> Kirim Pendaftaran';
-            btn.disabled = false;
-        });
+            // =========================
+            // NAVIGASI STEP
+            // =========================
+            document.querySelectorAll('.next-step').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    if (!validateStep(currentStep)) return;
 
-        // =========================
-        // VALIDASI FILE
-        // =========================
-        document.querySelectorAll('.file-upload').forEach(input => {
-            input.addEventListener('change', function() {
-                if (this.files[0]?.size > 2 * 1024 * 1024) {
-                    Swal.fire('Error', 'File max 2MB', 'error');
-                    this.value = '';
-                }
+                    steps[currentStep - 1].style.display = 'none';
+                    currentStep++;
+                    steps[currentStep - 1].style.display = 'block';
+                    updateProgress();
+                });
             });
-        });
 
-    });
+            document.querySelectorAll('.prev-step').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    steps[currentStep - 1].style.display = 'none';
+                    currentStep--;
+                    steps[currentStep - 1].style.display = 'block';
+                    updateProgress();
+                });
+            });
+
+            function updateProgress() {
+                progressBar.style.width = (currentStep / steps.length) * 100 + '%';
+            }
+
+            // =========================
+            // SUBMIT AJAX
+            // =========================
+            form.addEventListener('submit', async function(e) {
+                e.preventDefault();
+
+                if (!validateStep(currentStep)) return;
+
+                const btn = form.querySelector('button[type="submit"]');
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Mengirim...';
+                btn.disabled = true;
+
+                try {
+                    const res = await fetch(form.action, {
+                        method: 'POST',
+                        body: new FormData(form),
+                        headers: {
+                            'X-CSRF-TOKEN': document.querySelector('[name=_token]').value
+                        }
+                    });
+
+                    const data = await res.json();
+
+                    if (data.success) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Berhasil',
+                            html: data.message
+                        }).then(() => {
+                            form.reset();
+                            location.reload();
+                        });
+
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Gagal',
+                            html: data.message
+                        });
+                    }
+
+                } catch (err) {
+                    Swal.fire('Error', 'Server bermasalah', 'error');
+                }
+
+                btn.innerHTML = '<i class="fas fa-paper-plane"></i> Kirim Pendaftaran';
+                btn.disabled = false;
+            });
+
+            // =========================
+            // VALIDASI FILE
+            // =========================
+            document.querySelectorAll('.file-upload').forEach(input => {
+                input.addEventListener('change', function() {
+                    if (this.files[0]?.size > 2 * 1024 * 1024) {
+                        Swal.fire('Error', 'File max 2MB', 'error');
+                        this.value = '';
+                    }
+                });
+            });
+
+        });
     </script>
 </body>
 </html>

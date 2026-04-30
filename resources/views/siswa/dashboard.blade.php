@@ -200,9 +200,13 @@
                             </div>
 
                             @if($pendaftaran->kartu_keluarga)
-                                <a href="{{ Storage::url($pendaftaran->kartu_keluarga) }}" 
-                                target="_blank"
-                                class="btn btn-sm btn-success">
+                               <a 
+                                    href="{{ route('dokumen.lihat', [
+                                        'file' => $pendaftaran->kartu_keluarga
+                                    ]) }}" 
+                                    target="_blank"
+                                    class="btn btn-sm btn-success"
+                                >
                                     <i class="fas fa-eye"></i>
                                 </a>
                             @else
@@ -221,9 +225,14 @@
                             </div>
 
                             @if($pendaftaran->screenshot_jarak)
-                                <a href="{{ Storage::url($pendaftaran->screenshot_jarak) }}" 
-                                target="_blank"
-                                class="btn btn-sm btn-success">
+                                
+                               <a 
+                                    href="{{ route('dokumen.lihat', [
+                                        'file' => $pendaftaran->screenshot_jarak
+                                    ]) }}" 
+                                    target="_blank"
+                                    class="btn btn-sm btn-success"
+                                >
                                     <i class="fas fa-eye"></i>
                                 </a>
                             @else
@@ -243,9 +252,13 @@
                             </div>
 
                             @if($pendaftaran->kartu_kip)
-                                <a href="{{ Storage::url($pendaftaran->kartu_kip) }}" 
-                                target="_blank"
-                                class="btn btn-sm btn-success">
+                                <a 
+                                    href="{{ route('dokumen.lihat', [
+                                        'file' => $pendaftaran->kartu_kip
+                                    ]) }}" 
+                                    target="_blank"
+                                    class="btn btn-sm btn-success"
+                                >
                                     <i class="fas fa-eye"></i>
                                 </a>
                             @else
@@ -400,61 +413,57 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-// ==========================
-// AUTO HITUNG NILAI
-// ==========================
-function hitungTotalEdit() {
-    let bindo = parseFloat(document.getElementById('edit_bindo')?.value) || 0;
-    let mtk   = parseFloat(document.getElementById('edit_mtk')?.value) || 0;
-    let ipa   = parseFloat(document.getElementById('edit_ipa')?.value) || 0;
+        // ==========================
+        // AUTO HITUNG NILAI
+        // ==========================
+        function hitungTotalEdit() {
+            let bindo = parseFloat(document.getElementById('edit_bindo')?.value) || 0;
+            let mtk   = parseFloat(document.getElementById('edit_mtk')?.value) || 0;
+            let ipa   = parseFloat(document.getElementById('edit_ipa')?.value) || 0;
 
-    let total = bindo + mtk + ipa;
+            let total = bindo + mtk + ipa;
 
-    let totalField = document.getElementById('edit_total');
-    if (totalField) {
-        totalField.value = total.toFixed(2);
-    }
-}
+            let totalField = document.getElementById('edit_total');
+            if (totalField) {
+                totalField.value = total.toFixed(2);
+            }
+        }
 
-// ==========================
-// TOGGLE PRESTASI
-// ==========================
-function togglePrestasiEdit() {
-    let jalur = document.getElementById('jalurSelect')?.value;
-    let section = document.getElementById('editPrestasiSection');
+        // ==========================
+        // TOGGLE PRESTASI
+        // ==========================
+        function togglePrestasiEdit() {
+            let jalur = document.getElementById('jalurSelect')?.value;
+            let section = document.getElementById('editPrestasiSection');
 
-    if (!section) return;
+            if (!section) return;
 
-    let inputs = section.querySelectorAll('input, select');
+            let inputs = section.querySelectorAll('input, select');
 
-    if (jalur === 'prestasi_akademik' || jalur === 'prestasi_non_akademik') {
-        section.style.display = 'block';
-        inputs.forEach(i => i.disabled = false);
-    } else {
-        section.style.display = 'none';
-        inputs.forEach(i => i.disabled = true);
-    }
-}
+            if (jalur === 'prestasi_akademik' || jalur === 'prestasi_non_akademik') {
+                section.style.display = 'block';
+                inputs.forEach(i => i.disabled = false);
+            } else {
+                section.style.display = 'none';
+                inputs.forEach(i => i.disabled = true);
+            }
+        }
 
-// ==========================
-// EVENT LISTENER
-// ==========================
-document.addEventListener('DOMContentLoaded', function () {
+        // ==========================
+        // EVENT LISTENER
+        // ==========================
+        document.addEventListener('DOMContentLoaded', function () {
 
-    // hitung awal
-    hitungTotalEdit();
+            hitungTotalEdit();
 
-    // event input nilai
-    document.getElementById('edit_bindo')?.addEventListener('input', hitungTotalEdit);
-    document.getElementById('edit_mtk')?.addEventListener('input', hitungTotalEdit);
-    document.getElementById('edit_ipa')?.addEventListener('input', hitungTotalEdit);
+            document.getElementById('edit_bindo')?.addEventListener('input', hitungTotalEdit);
+            document.getElementById('edit_mtk')?.addEventListener('input', hitungTotalEdit);
+            document.getElementById('edit_ipa')?.addEventListener('input', hitungTotalEdit);
 
-    // jalur select (dari form utama)
-    document.getElementById('jalurSelect')?.addEventListener('change', togglePrestasiEdit);
+            document.getElementById('jalurSelect')?.addEventListener('change', togglePrestasiEdit);
 
-    // initial check
-    togglePrestasiEdit();
-});
-</script>
+            togglePrestasiEdit();
+        });
+    </script>
 </body>
 </html>

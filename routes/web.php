@@ -74,4 +74,7 @@ Route::post('/logout', function () {
 |--------------------------------------------------------------------------
 */
 
+Route::get('dokumen/lihat/{file}', [PendaftaranController::class, 'previewFile'])
+    ->where('file', '.*') // 🔥 WAJIB
+    ->name('dokumen.lihat');
 Route::resource('/pendaftaran', PendaftaranController::class);

@@ -18,7 +18,6 @@
                     </a>
                 </li>
 
-                {{-- Jika BELUM login --}}
                 @guest
                 <li class="nav-item ms-3">
                     <a class="btn btn-warning btn-sm px-4 py-2 fw-semibold" href="{{ route('auth.login') }}">
@@ -35,7 +34,6 @@
 
                     <ul class="dropdown-menu dropdown-menu-end">
 
-                        {{-- Jika ADMIN --}}
                         @if(auth()->user()->role === 'admin')
                         <li>
                             <a href="{{ route('admin.dashboard') }}" class="dropdown-item">
@@ -44,7 +42,6 @@
                         </li>
                         @endif
 
-                        {{-- Jika SISWA --}}
                         @if(auth()->user()->role === 'siswa')
                         <li>
                             <a href="{{ route('siswa.dashboard') }}" class="dropdown-item">

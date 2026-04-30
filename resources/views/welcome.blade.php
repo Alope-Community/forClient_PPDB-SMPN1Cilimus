@@ -392,20 +392,6 @@
         }
     });
 
-    // Smooth scrolling for navigation links
-    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-        anchor.addEventListener('click', function (e) {
-            e.preventDefault();
-            const target = document.querySelector(this.getAttribute('href'));
-            if (target) {
-                target.scrollIntoView({
-                    behavior: 'smooth',
-                    block: 'start'
-                });
-            }
-        });
-    });
-
     // Counter animation
     function animateCounters() {
         const counters = document.querySelectorAll('.counter-number');
@@ -446,16 +432,14 @@
     document.getElementById('registrationForm').addEventListener('submit', function(e) {
         e.preventDefault();
         
-        // Simulate form submission
         const submitBtn = this.querySelector('button[type="submit"]');
         const originalText = submitBtn.innerHTML;
         
         submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Memproses...';
         submitBtn.disabled = true;
         
-        // Simulate API call
         setTimeout(() => {
-            alert('✅ Terima kasih! Pendaftaran Anda telah berhasil dikirim. Silakan cek email untuk konfirmasi.');
+            alert('✅ Terima kasih! Pendaftaran Anda telah berhasil dikirim.');
             this.reset();
             submitBtn.innerHTML = originalText;
             submitBtn.disabled = false;

@@ -1,10 +1,11 @@
 <div class="modal fade" id="modalDokumen" tabindex="-1">
     <div class="modal-dialog modal-lg modal-dialog-scrollable">
         <div class="modal-content border-0 shadow-lg rounded-4">
-
-            <form action="{{ route('pendaftaran.update', $pendaftaran->id) }}" 
+            <form 
+                action="{{ route('pendaftaran.update', $pendaftaran->id) }}" 
                 method="POST" 
-                enctype="multipart/form-data">
+                enctype="multipart/form-data"
+            >
                 @csrf
                 @method('PUT')
 
@@ -174,9 +175,7 @@
                         <i class="fas fa-save me-1"></i> Simpan Perubahan
                     </button>
                 </div>
-
             </form>
-
         </div>
     </div>
 </div>

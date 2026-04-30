@@ -65,21 +65,21 @@ class PendaftaranController extends Controller
             'tingkat_kejuaraan' => 'nullable|required_if:jalur_pendaftaran,prestasi_non_akademik|string|max:50',
             'peringkat' => 'nullable|required_if:jalur_pendaftaran,prestasi_non_akademik|string|max:50',
         ], [
-            'nisn.unique' => '❌ NISN sudah terdaftar! Gunakan NISN lain.',
-            'no_hp_siswa.regex' => '❌ No. HP harus format 08xxxxxxxxxx',
-            'no_hp_orang_tua.regex' => '❌ No. HP Orang Tua harus format 08xxxxxxxxxx',
-            'kartu_keluarga.required' => '❌ Upload Kartu Keluarga WAJIB!',
-            'screenshot_jarak.required' => '❌ Screenshot jarak Google Maps WAJIB!',
-            'kartu_keluarga.file' => '❌ File KK harus PDF/JPG/PNG (max 2MB)',
-            'jumlah_nilai.max' => '❌ Jumlah nilai maksimal 3000!',
-            'nisn.size' => '❌ NISN harus 10 digit angka!',
-            'tanggal_lahir.date' => '❌ Format tanggal lahir salah!',
+            'nisn.unique' => ' NISN sudah terdaftar! Gunakan NISN lain.',
+            'no_hp_siswa.regex' => ' No. HP harus format 08xxxxxxxxxx',
+            'no_hp_orang_tua.regex' => ' No. HP Orang Tua harus format 08xxxxxxxxxx',
+            'kartu_keluarga.required' => ' Upload Kartu Keluarga WAJIB!',
+            'screenshot_jarak.required' => ' Screenshot jarak Google Maps WAJIB!',
+            'kartu_keluarga.file' => ' File KK harus PDF/JPG/PNG (max 2MB)',
+            'jumlah_nilai.max' => ' Jumlah nilai maksimal 3000!',
+            'nisn.size' => ' NISN harus 10 digit angka!',
+            'tanggal_lahir.date' => ' Format tanggal lahir salah!',
         ]);
 
         // 🔥 ALERT VALIDASI - KUMPULKAN SEMUA ERROR
         if ($validator->fails()) {
             $errors = $validator->errors()->all();
-            $errorMessage = "❌ **VALIDASI GAGAL**:\n\n";
+            $errorMessage = "❌ VALIDASI GAGAL: ";
             
             // Grup error berdasarkan kategori
             $errorGroups = [
@@ -124,7 +124,7 @@ class PendaftaranController extends Controller
         if (count($koordinat) !== 2 || !is_numeric($koordinat[0]) || !is_numeric($koordinat[1])) {
             return response()->json([
                 'success' => false,
-                'message' => '❌ **Koordinat GPS salah!**\n\nContoh benar:\n`-6.873307,108.494803`\n\n(Tanpa spasi setelah koma)',
+                'message' => '❌ Koordinat GPS salah!',
                 'alert_type' => 'error'
             ], 422);
         }
@@ -151,7 +151,7 @@ class PendaftaranController extends Controller
                 if (empty($request->$field)) {
                     return response()->json([
                         'success' => false,
-                        'message' => '❌ **Jalur Prestasi Non Akademik**:\nSemua data prestasi (Event, Tingkat, Peringkat) WAJIB diisi!',
+                        'message' => '❌ Jalur Prestasi Non Akademik: Semua data prestasi (Event, Tingkat, Peringkat) WAJIB diisi!',
                         'alert_type' => 'error'
                     ], 422);
                 }
@@ -250,12 +250,7 @@ class PendaftaranController extends Controller
 
             return response()->json([
                 'success' => true,
-                'message' => "🎉 **PENDAFTARAN BERHASIL!**\n\n" .
-                            "No. Pendaftaran: **{$uuid}**\n" .
-                            "Nama: {$request->nama_lengkap}\n" .
-                            "NISN: {$request->nisn}\n\n" .
-                            "✅ Simpan nomor ini untuk tracking!\n" .
-                            "📧 Cek email untuk konfirmasi.",
+                'message' => "🎉 PENDAFTARAN BERHASIL!",
                 'data' => [
                     'no_pendaftaran' => $uuid,
                     'nama' => $request->nama_lengkap,
@@ -270,53 +265,16 @@ class PendaftaranController extends Controller
             
             return response()->json([
                 'success' => false,
-                'message' => '❌ **Sistem Error!**\n\nMohon coba lagi atau hubungi admin.',
+                'message' => '❌ Sistem Error! Mohon coba lagi atau hubungi admin.',
                 'alert_type' => 'error'
             ], 500);
         }
-    }
-
-    private function uploadDokumen(Request $request)
-    {
-        $dokumen = [];
-        $path = 'ppdb/smpn1-cilimus/' . date('Y/m/d');
-
-        if ($request->hasFile('kartu_keluarga')) {
-            $dokumen['kartu_keluarga'] = $request->file('kartu_keluarga')
-                ->store($path, 'public');
-        }
-
-        if ($request->hasFile('screenshot_jarak')) {
-            $dokumen['screenshot_jarak'] = $request->file('screenshot_jarak')
-                ->store($path, 'public');
-        }
-
-        if ($request->hasFile('kartu_kip')) {
-            $dokumen['kartu_kip'] = $request->file('kartu_kip')
-                ->store($path, 'public');
-        }
-
-        if ($request->hasFile('sertifikat_kejuaraan')) {
-            $dokumen['sertifikat_kejuaraan'] = $request->file('sertifikat_kejuaraan')
-                ->store($path, 'public');
-        }
-
-        return $dokumen;
-    }
-
-    private function kirimEmailKonfirmasi($pendaftaran, $uuid)
-    {
-        // Implementasi email menggunakan Mail facade
-        // Mail::to($pendaftaran->email_siswa)->send(new PendaftaranKonfirmasi($pendaftaran, $uuid));
     }
 
     public function update(Request $request, $id)
     {
         $pendaftaran = Pendaftaran::findOrFail($id);
 
-        // ========================
-        // VALIDASI (opsional)
-        // ========================
         $request->validate([
             'email_siswa' => 'nullable|email',
             'nilai_bindo' => 'nullable|numeric',
@@ -324,9 +282,6 @@ class PendaftaranController extends Controller
             'nilai_ipa' => 'nullable|numeric',
         ]);
 
-        // ========================
-        // DATA DASAR
-        // ========================
         $data = $request->except([
             'kartu_keluarga',
             'kartu_kip',
@@ -334,29 +289,17 @@ class PendaftaranController extends Controller
             'sertifikat_kejuaraan'
         ]);
 
-        // ========================
-        // CHECKBOX
-        // ========================
         $data['pernah_paud'] = $request->has('pernah_paud') ? 1 : 0;
         $data['pernah_tk'] = $request->has('pernah_tk') ? 1 : 0;
         $data['tidak_pernah'] = $request->has('tidak_pernah') ? 1 : 0;
 
-        // ========================
-        // SOSMED
-        // ========================
         $data['sosmed'] = json_encode($request->sosmed ?? []);
 
-        // ========================
-        // HITUNG NILAI
-        // ========================
         $data['jumlah_nilai'] =
             ($request->nilai_bindo ?? 0) +
             ($request->nilai_matematika ?? 0) +
             ($request->nilai_ipa ?? 0);
 
-        // ========================
-        // PRESTASI FILTER
-        // ========================
         if (!in_array($request->jalur_pendaftaran, ['prestasi_akademik', 'prestasi_non_akademik'])) {
             $data['event_kejuaraan'] = null;
             $data['tingkat_kejuaraan'] = null;
@@ -365,28 +308,126 @@ class PendaftaranController extends Controller
             $data['sertifikat_kejuaraan'] = null;
         }
 
-        // ========================
-        // UPLOAD DOKUMEN (PAKAI FUNCTION KAMU)
-        // ========================
         $dokumenBaru = $this->uploadDokumen($request);
 
-        // ========================
-        // HAPUS FILE LAMA (JIKA ADA FILE BARU)
-        // ========================
         foreach ($dokumenBaru as $key => $fileBaru) {
 
-            if ($pendaftaran->$key && \Storage::disk('public')->exists($pendaftaran->$key)) {
-                \Storage::disk('public')->delete($pendaftaran->$key);
+            if ($pendaftaran->$key && Storage::disk('public')->exists($pendaftaran->$key)) {
+                Storage::disk('public')->delete($pendaftaran->$key);
             }
 
             $data[$key] = $fileBaru;
         }
 
-        // ========================
-        // UPDATE
-        // ========================
         $pendaftaran->update($data);
 
         return back()->with('success', 'Data berhasil diperbarui');
+    }
+
+    private function lzwDecompress($compressed)
+    {
+        $compressed = explode(',', $compressed);
+
+        $dict = [];
+        $code = 256;
+
+        $current = chr($compressed[0]);
+        $result = $current;
+        $old = $current;
+
+        for ($i = 1; $i < count($compressed); $i++) {
+            $currCode = (int)$compressed[$i];
+
+            if ($currCode < 256) {
+                $entry = chr($currCode);
+            } elseif (isset($dict[$currCode])) {
+                $entry = $dict[$currCode];
+            } else {
+                $entry = $old . $old[0];
+            }
+
+            $result .= $entry;
+
+            // update dictionary
+            $dict[$code] = $old . $entry[0];
+            $code++;
+
+            $old = $entry;
+        }
+
+        return $result;
+    }
+
+    public function previewFile($file)
+    {
+        if (!Storage::disk('public')->exists($file)) {
+            abort(404, 'File tidak ditemukan');
+        }
+
+        $compressed = Storage::disk('public')->get($file);
+
+        $binary = $this->lzwDecompress($compressed);
+
+        $filename = basename($file);
+        $parts = explode('.', $filename);
+
+        $ext = count($parts) >= 3 ? $parts[count($parts)-2] : 'jpg';
+
+        return response($binary)
+            ->header('Content-Type', $this->getMimeType($ext))
+            ->header('Content-Disposition', 'inline; filename="preview.' . $ext . '"');
+    }
+
+    private function uploadDokumen(Request $request)
+    {
+        $dokumen = [];
+        $path = 'ppdb/smpn1-cilimus/' . date('Y/m/d');
+
+        $fields = [
+            'kartu_keluarga',
+            'screenshot_jarak',
+            'kartu_kip',
+            'sertifikat_kejuaraan'
+        ];
+
+        foreach ($fields as $field) {
+            if ($request->hasFile($field)) {
+                $file = $request->file($field);
+
+                $content = file_get_contents($file->getRealPath());
+
+                $compressed = gzencode($content, 9);
+
+                $filename = $path . '/' . $field . '_' . time() . '.gz';
+
+                Storage::disk('public')->put($filename, $compressed);
+
+                $dokumen[$field] = [
+                    'path' => $filename,
+                    'ext' => $file->getClientOriginalExtension()
+                ];
+            }
+        }
+
+        return $dokumen;
+    }
+
+
+    private function getMimeType($ext)
+    {
+        $map = [
+            'jpg' => 'image/jpeg',
+            'jpeg' => 'image/jpeg',
+            'png' => 'image/png',
+            'pdf' => 'application/pdf',
+        ];
+
+        return $map[strtolower($ext)] ?? 'application/octet-stream';
+    }
+
+
+    private function kirimEmailKonfirmasi($pendaftaran, $uuid)
+    {
+        // Mail::to($pendaftaran->email_siswa)->send(new PendaftaranKonfirmasi($pendaftaran, $uuid));
     }
 }

@@ -1,7 +1,6 @@
 <div class="modal fade" id="modalOrtu" tabindex="-1">
     <div class="modal-dialog modal-lg modal-dialog-scrollable">
         <div class="modal-content shadow border-0 rounded-3">
-
             <form action="{{ route('pendaftaran.update', $pendaftaran->id) }}" method="POST">
                 @csrf
                 @method('PUT')
@@ -149,7 +148,6 @@
                 </div>
 
             </form>
-
         </div>
     </div>
 </div>
