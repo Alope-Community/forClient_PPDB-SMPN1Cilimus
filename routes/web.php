@@ -1,9 +1,10 @@
 <?php
 
-use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\DashboardController as AdminDashboardCcontroller;
 use App\Http\Controllers\Admin\PendaftaranController as AdminPendaftaranController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\PendaftaranController;
 use App\Models\Pendaftaran;
 use Illuminate\Support\Facades\Auth;
@@ -40,7 +41,7 @@ Route::prefix('admin')
     ->middleware('auth') // ⬅️ wajib login
     ->group(function () {
 
-        Route::get('/dashboard', DashboardController::class)->name('dashboard');
+        Route::get('/dashboard', AdminDashboardCcontroller::class)->name('dashboard');
 
         Route::resource('/pendaftar', AdminPendaftaranController::class);
     });
@@ -51,12 +52,7 @@ Route::prefix('siswa')
     ->middleware('auth')
     ->group(function () {
 
-        Route::get('/dashboard', function () {
-
-            $pendaftaran = Pendaftaran::where('user_id', Auth::id())->first();
-
-            return view('siswa.dashboard', compact('pendaftaran'));
-        })->name('dashboard');
+        Route::get('/dashboard', DashboardController::class)->name('dashboard');
     });
 
 /*
