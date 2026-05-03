@@ -139,29 +139,29 @@
                     <div class="d-grid gap-2">
 
                         @if($pendaftaran->kartu_keluarga)
-                            <a href="{{ Storage::url($pendaftaran->kartu_keluarga) }}" target="_blank"
-                               class="btn btn-outline-primary btn-sm">
+                            <a href="{{ route('dokumen.lihat', $pendaftaran->kartu_keluarga) }}" target="_blank"
+                            class="btn btn-outline-primary btn-sm">
                                 📄 Lihat Kartu Keluarga
                             </a>
                         @endif
 
                         @if($pendaftaran->screenshot_jarak)
-                            <a href="{{ Storage::url($pendaftaran->screenshot_jarak) }}" target="_blank"
-                               class="btn btn-outline-success btn-sm">
+                            <a href="{{ route('dokumen.lihat', $pendaftaran->screenshot_jarak) }}" target="_blank"
+                            class="btn btn-outline-success btn-sm">
                                 📍 Lihat Jarak
                             </a>
                         @endif
 
                         @if($pendaftaran->kartu_kip)
-                            <a href="{{ Storage::url($pendaftaran->kartu_kip) }}" target="_blank"
-                               class="btn btn-outline-warning btn-sm">
+                            <a href="{{ route('dokumen.lihat', $pendaftaran->kartu_kip) }}" target="_blank"
+                            class="btn btn-outline-warning btn-sm">
                                 💳 Lihat KIP
                             </a>
                         @endif
 
                         @if($pendaftaran->sertifikat_kejuaraan)
-                            <a href="{{ Storage::url($pendaftaran->sertifikat_kejuaraan) }}" target="_blank"
-                               class="btn btn-outline-info btn-sm">
+                            <a href="{{ route('dokumen.lihat', $pendaftaran->sertifikat_kejuaraan) }}" target="_blank"
+                            class="btn btn-outline-info btn-sm">
                                 🏆 Sertifikat Prestasi
                             </a>
                         @endif

@@ -174,6 +174,7 @@
                                 </div>
                             </div>
                             <div class="card-footer bg-light border-0 p-4">
+                                <a href="/" class="btn btn-danger">Kembali</a>
                                 <button type="button" class="btn btn-primary btn-lg px-5 next-step">
                                     <i class="fas fa-arrow-right me-2"></i>Selanjutnya: Alamat & Dokumen
                                 </button>

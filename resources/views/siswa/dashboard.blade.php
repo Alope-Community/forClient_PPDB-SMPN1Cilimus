@@ -200,10 +200,8 @@
                             </div>
 
                             @if($pendaftaran->kartu_keluarga)
-                               <a 
-                                    href="{{ route('dokumen.lihat', [
-                                        'file' => $pendaftaran->kartu_keluarga
-                                    ]) }}" 
+                                <a 
+                                    href="{{ route('dokumen.lihat', $pendaftaran->kartu_keluarga) }}" 
                                     target="_blank"
                                     class="btn btn-sm btn-success"
                                 >
@@ -225,11 +223,8 @@
                             </div>
 
                             @if($pendaftaran->screenshot_jarak)
-                                
-                               <a 
-                                    href="{{ route('dokumen.lihat', [
-                                        'file' => $pendaftaran->screenshot_jarak
-                                    ]) }}" 
+                                <a 
+                                    href="{{ route('dokumen.lihat', $pendaftaran->screenshot_jarak) }}" 
                                     target="_blank"
                                     class="btn btn-sm btn-success"
                                 >
@@ -253,9 +248,7 @@
 
                             @if($pendaftaran->kartu_kip)
                                 <a 
-                                    href="{{ route('dokumen.lihat', [
-                                        'file' => $pendaftaran->kartu_kip
-                                    ]) }}" 
+                                    href="{{ route('dokumen.lihat', $pendaftaran->screenshot_jarak) }}" 
                                     target="_blank"
                                     class="btn btn-sm btn-success"
                                 >

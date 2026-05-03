@@ -107,7 +107,7 @@ class PendaftaranController extends Controller
             // Buat pesan alert yang rapi
             foreach ($errorGroups as $kategori => $errList) {
                 if (!empty($errList)) {
-                    $errorMessage .= "📁 **$kategori**:\n" . implode("\n", $errList) . "\n\n";
+                    $errorMessage .= "$kategori:\n" . implode("\n", $errList) . "\n\n";
                 }
             }
             
@@ -326,90 +326,177 @@ class PendaftaranController extends Controller
 
     private function lzwDecompress($compressed)
     {
-        $compressed = explode(',', $compressed);
+        $compressed = json_decode($compressed, true);
 
-        $dict = [];
-        $code = 256;
+        $dictionary = [];
+        $dictSize = 256;
 
-        $current = chr($compressed[0]);
-        $result = $current;
-        $old = $current;
+        for ($i = 0; $i < 256; $i++) {
+            $dictionary[$i] = chr($i);
+        }
+
+        $w = chr($compressed[0]);
+        $result = $w;
 
         for ($i = 1; $i < count($compressed); $i++) {
-            $currCode = (int)$compressed[$i];
+            $k = $compressed[$i];
 
-            if ($currCode < 256) {
-                $entry = chr($currCode);
-            } elseif (isset($dict[$currCode])) {
-                $entry = $dict[$currCode];
+            if (isset($dictionary[$k])) {
+                $entry = $dictionary[$k];
+            } elseif ($k == $dictSize) {
+                $entry = $w . $w[0];
             } else {
-                $entry = $old . $old[0];
+                throw new \Exception("Bad compressed k: $k");
             }
 
             $result .= $entry;
-
-            // update dictionary
-            $dict[$code] = $old . $entry[0];
-            $code++;
-
-            $old = $entry;
+            $dictionary[$dictSize++] = $w . $entry[0];
+            $w = $entry;
         }
 
         return $result;
     }
 
-    public function previewFile($file)
-    {
-        if (!Storage::disk('public')->exists($file)) {
-            abort(404, 'File tidak ditemukan');
-        }
+public function showImage($path)
+{
+    // decode URL (biar aman dari %2F dll)
+    $path = urldecode($path);
 
-        $compressed = Storage::disk('public')->get($file);
+    $fullPath = storage_path('app/public/' . $path);
 
-        $binary = $this->lzwDecompress($compressed);
-
-        $filename = basename($file);
-        $parts = explode('.', $filename);
-
-        $ext = count($parts) >= 3 ? $parts[count($parts)-2] : 'jpg';
-
-        return response($binary)
-            ->header('Content-Type', $this->getMimeType($ext))
-            ->header('Content-Disposition', 'inline; filename="preview.' . $ext . '"');
+    // cek file ada atau tidak
+    if (!file_exists($fullPath)) {
+        abort(404, 'File tidak ditemukan');
     }
+
+    // ambil file hasil kompresi LZW
+    $compressed = file_get_contents($fullPath);
+
+    // decompress
+    $binary = $this->lzwDecompress($compressed);
+
+    // 🔥 ambil ekstensi ASLI (dari nama sebelum .lzw)
+    $filename = pathinfo($path, PATHINFO_FILENAME); 
+    $ext = pathinfo($filename, PATHINFO_EXTENSION);
+
+    // fallback kalau nama tidak mengandung ext
+    if (!$ext) {
+        $ext = 'jpg';
+    }
+
+    $mime = match (strtolower($ext)) {
+        'png' => 'image/png',
+        'jpg', 'jpeg' => 'image/jpeg',
+        default => 'image/jpeg'
+    };
+
+    return response($binary)
+        ->header('Content-Type', $mime)
+        ->header('Content-Disposition', 'inline; filename="preview.' . $ext . '"');
+}
 
     private function uploadDokumen(Request $request)
     {
         $dokumen = [];
         $path = 'ppdb/smpn1-cilimus/' . date('Y/m/d');
 
-        $fields = [
-            'kartu_keluarga',
-            'screenshot_jarak',
-            'kartu_kip',
-            'sertifikat_kejuaraan'
-        ];
+        $handleLZW = function ($file, $path) {
 
-        foreach ($fields as $field) {
-            if ($request->hasFile($field)) {
-                $file = $request->file($field);
+            // ambil binary file asli
+            $content = file_get_contents($file->getRealPath());
 
-                $content = file_get_contents($file->getRealPath());
+            // compress LZW
+            $compressed = $this->lzwCompress($content);
 
-                $compressed = gzencode($content, 9);
+            // nama file .lzw
+            $filename = uniqid() . '.lzw';
 
-                $filename = $path . '/' . $field . '_' . time() . '.gz';
+            $fullPath = storage_path('app/public/' . $path . '/' . $filename);
 
-                Storage::disk('public')->put($filename, $compressed);
-
-                $dokumen[$field] = [
-                    'path' => $filename,
-                    'ext' => $file->getClientOriginalExtension()
-                ];
+            if (!file_exists(dirname($fullPath))) {
+                mkdir(dirname($fullPath), 0777, true);
             }
+
+            file_put_contents($fullPath, $compressed);
+
+            return $path . '/' . $filename;
+        };
+
+        if ($request->hasFile('kartu_keluarga')) {
+            $dokumen['kartu_keluarga'] = $handleLZW($request->file('kartu_keluarga'), $path);
+        }
+
+        if ($request->hasFile('screenshot_jarak')) {
+            $dokumen['screenshot_jarak'] = $handleLZW($request->file('screenshot_jarak'), $path);
+        }
+
+        if ($request->hasFile('kartu_kip')) {
+            $dokumen['kartu_kip'] = $handleLZW($request->file('kartu_kip'), $path);
+        }
+
+        if ($request->hasFile('sertifikat_kejuaraan')) {
+            $dokumen['sertifikat_kejuaraan'] = $handleLZW($request->file('sertifikat_kejuaraan'), $path);
         }
 
         return $dokumen;
+    }
+
+    // private function uploadDokumen(Request $request)
+    // {
+    //     $dokumen = [];
+    //     $path = 'ppdb/smpn1-cilimus/' . date('Y/m/d');
+
+    //     if ($request->hasFile('kartu_keluarga')) {
+    //         $dokumen['kartu_keluarga'] = $request->file('kartu_keluarga')
+    //             ->store($path, 'public');
+    //     }
+
+    //     if ($request->hasFile('screenshot_jarak')) {
+    //         $dokumen['screenshot_jarak'] = $request->file('screenshot_jarak')
+    //             ->store($path, 'public');
+    //     }
+
+    //     if ($request->hasFile('kartu_kip')) {
+    //         $dokumen['kartu_kip'] = $request->file('kartu_kip')
+    //             ->store($path, 'public');
+    //     }
+
+    //     if ($request->hasFile('sertifikat_kejuaraan')) {
+    //         $dokumen['sertifikat_kejuaraan'] = $request->file('sertifikat_kejuaraan')
+    //             ->store($path, 'public');
+    //     }
+
+    //     return $dokumen;
+    // }
+
+    private function lzwCompress($data)
+    {
+        $dictionary = [];
+        $dictSize = 256;
+
+        for ($i = 0; $i < 256; $i++) {
+            $dictionary[chr($i)] = $i;
+        }
+
+        $w = "";
+        $result = [];
+
+        foreach (str_split($data) as $c) {
+            $wc = $w . $c;
+            if (isset($dictionary[$wc])) {
+                $w = $wc;
+            } else {
+                $result[] = $dictionary[$w];
+                $dictionary[$wc] = $dictSize++;
+                $w = $c;
+            }
+        }
+
+        if ($w !== "") {
+            $result[] = $dictionary[$w];
+        }
+
+        return json_encode($result); // simpan sebagai JSON
     }
 
 
