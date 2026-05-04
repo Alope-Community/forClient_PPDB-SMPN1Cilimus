@@ -92,11 +92,20 @@
                                 <label class="form-label small text-muted">Kartu KIP</label>
                                 <input type="file" name="kartu_kip" class="form-control">
 
-                                @if($pendaftaran->kartu_kip)
+                                {{-- @if($pendaftaran->kartu_kip)
                                     <a href="{{ asset('storage/' . $pendaftaran->kartu_kip) }}" 
                                         target="_blank"
                                         class="btn btn-sm btn-outline-primary mt-2">
                                         <i class="fas fa-eye me-1"></i> Lihat File
+                                    </a>
+                                @endif --}}
+                                @if($pendaftaran->kartu_kip)
+                                    <a 
+                                        href="{{ route('dokumen.lihat', $pendaftaran->kartu_kip) }}" 
+                                        target="_blank"
+                                        class="btn btn-sm btn-outline-primary mt-2"
+                                    >
+                                       <i class="fas fa-eye me-1"></i> Lihat File
                                     </a>
                                 @endif
                             </div>
@@ -107,7 +116,7 @@
                                 <input type="file" name="screenshot_jarak" class="form-control">
 
                                 @if($pendaftaran->screenshot_jarak)
-                                    <a href="{{ asset('storage/' . $pendaftaran->screenshot_jarak) }}" 
+                                    <a href="{{ route('dokumen.lihat', $pendaftaran->screenshot_jarak) }}" 
                                         target="_blank"
                                         class="btn btn-sm btn-outline-primary mt-2">
                                         <i class="fas fa-eye me-1"></i> Lihat File
@@ -121,7 +130,7 @@
                                 <input type="file" name="kartu_keluarga" class="form-control">
 
                                 @if($pendaftaran->kartu_keluarga)
-                                    <a href="{{ asset('storage/' . $pendaftaran->kartu_keluarga) }}" 
+                                    <a href="{{ route('dokumen.lihat', $pendaftaran->kartu_keluarga) }}" 
                                         target="_blank"
                                         class="btn btn-sm btn-outline-primary mt-2">
                                         <i class="fas fa-eye me-1"></i> Lihat File
