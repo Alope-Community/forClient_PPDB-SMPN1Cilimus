@@ -2,7 +2,8 @@
 
     <!-- LOGO / TITLE -->
     <div class="mb-4 text-center">
-        <h5 class="fw-bold mb-0">Admin PPDB</h5>
+        <img src="https://smpn1cilimus.sch.id/wp-content/uploads/2021/07/Untitled-design.png" class="me-2 mb-3" style="width: 70px" />
+        <h5 class="fw-bold mb-0">Admin SPBM</h5>
         <small class="text-light opacity-75">SMPN 1 Cilimus</small>
     </div>
 
@@ -37,7 +38,7 @@
         <!-- FOOTER -->
         <div class="pt-4 text-center mb-3">
             <small class="text-light opacity-50">
-                © {{ date('Y') }} PPDB
+                © {{ date('Y') }} SPBM
             </small>
         </div>
 

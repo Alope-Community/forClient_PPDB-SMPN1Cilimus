@@ -50,7 +50,8 @@
     <nav class="navbar navbar-dark bg-dark fixed-top">
         <div class="container">
             <span class="navbar-brand">
-                <i class="fas fa-school me-2"></i>PPDB
+                <img src="https://smpn1cilimus.sch.id/wp-content/uploads/2021/07/Untitled-design.png" class="me-2" style="width: 40px" />
+                SPMB SMPN 1 Cilimus
             </span>
 
             <div>

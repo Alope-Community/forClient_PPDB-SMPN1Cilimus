@@ -12,9 +12,9 @@
                 <!-- Header -->
                 <div class="text-center mb-4">
                     <div class="mb-3">
-                        <i class="fas fa-school fa-3x text-primary"></i>
+                        <img src="https://smpn1cilimus.sch.id/wp-content/uploads/2021/07/Untitled-design.png" class="me-2" style="width: 70px" />
                     </div>
-                    <h4 class="fw-bold">Login PPDB</h4>
+                    <h4 class="fw-bold">Login SPBM</h4>
                     <small class="text-muted">SMPN 1 Cilimus 2025/2026</small>
                 </div>
 

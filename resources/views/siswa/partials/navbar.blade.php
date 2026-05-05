@@ -1,7 +1,7 @@
 <nav class="navbar navbar-expand-lg navbar-light fixed-top py-3" id="mainNavbar">
     <div class="container">
         <a class="navbar-brand text-primary fw-bold" href="/">
-            <i class="fas fa-graduation-cap me-2"></i>
+            <img src="https://smpn1cilimus.sch.id/wp-content/uploads/2021/07/Untitled-design.png" class="me-2" style="width: 40px" />
             {{ config('app.name') }}
         </a>
 

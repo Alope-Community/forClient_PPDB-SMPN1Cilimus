@@ -50,9 +50,9 @@
                     <!-- Header -->
                     <div class="text-center text-white mb-5 pt-3">
                         <div class="mb-4">
-                            <i class="fas fa-school fa-4x mb-3 opacity-75"></i>
+                            <img src="https://smpn1cilimus.sch.id/wp-content/uploads/2021/07/Untitled-design.png" class="me-2" style="width: 100px" />
                         </div>
-                        <h1 class="display-4 fw-bold mb-3">PPDB SMPN 1 CILIMUS</h1>
+                        <h1 class="display-4 fw-bold mb-3">SPBM SMPN 1 CILIMUS</h1>
                         <p class="lead mb-4">Tahun Ajaran 2025/2026</p>
                         <div class="progress rounded-pill shadow" style="height: 12px; max-width: 500px; margin: 0 auto;">
                             <div class="progress-bar bg-warning rounded-pill" id="progressBar" style="width: 0%"></div>

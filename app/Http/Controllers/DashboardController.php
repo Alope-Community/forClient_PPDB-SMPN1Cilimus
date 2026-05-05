@@ -15,6 +15,6 @@ class DashboardController extends Controller
     {
         $pendaftaran = Pendaftaran::where('user_id', Auth::id())->first();
 
-        return view('siswa.dashboard', compact('pendaftaran'));
+        return view('dashboard', compact('pendaftaran'));
     }
 }

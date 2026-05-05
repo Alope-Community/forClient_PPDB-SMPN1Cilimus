@@ -8,7 +8,7 @@
     <!-- TITLE -->
     <div class="mb-4">
         <h3 class="fw-bold">Dashboard Admin</h3>
-        <p class="text-muted">Ringkasan data pendaftaran PPDB</p>
+        <p class="text-muted">Ringkasan data pendaftaran</p>
     </div>
 
     <!-- STAT CARDS -->

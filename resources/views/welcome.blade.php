@@ -149,7 +149,7 @@
         <div class="row align-items-center">
             <div class="col-lg-6 hero-content">
                 <h1 class="display-5 fw-bold mb-4 animate__animated animate__fadeInUp">
-                    Penerimaan Siswa Baru <br>
+                    Sistem Penerimaan Murid Baru <br>
                     <span class="text-warning display-6 fw-bold">Tahun Ajaran 2026/2026</span>
                 </h1>
                 <p class="lead mb-5 animate__animated animate__fadeInUp animate__delay-1s">
@@ -345,8 +345,8 @@
         <div class="row">
             <div class="col-lg-4 mb-4">
                 <h5 class="fw-bold mb-3">
-                    <i class="fas fa-graduation-cap me-2 text-primary"></i>
-                    {{ config('app.name', 'SMK NEGERI 1') }}
+                    <img src="https://smpn1cilimus.sch.id/wp-content/uploads/2021/07/Untitled-design.png" class="me-2" style="width: 40px" />
+                    {{ config('app.name', 'SMPN 1 Cilimus') }}
                 </h5>
                 <p>Sekolah unggulan dengan fasilitas modern dan kurikulum terbaik untuk masa depan anak bangsa.</p>
                 <div class="d-flex gap-3">
@@ -374,7 +374,7 @@
         </div>
         <hr class="my-4">
                     <div class="text-center">
-            <p class="mb-0">&copy; 2026 {{ config('app.name', 'SMK NEGERI 1') }}. All rights reserved. | PPDB Online</p>
+            <p class="mb-0">&copy; 2026 {{ config('app.name', 'SMPN 1 Cilimus') }}. All rights reserved. | PPDB Online</p>
         </div>
     </div>
 </footer>
