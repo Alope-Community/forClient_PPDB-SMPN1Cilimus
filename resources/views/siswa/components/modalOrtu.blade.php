@@ -1,6 +1,7 @@
 <div class="modal fade" id="modalOrtu" tabindex="-1">
-    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+    <div class="modal-dialog modal-lg">
         <div class="modal-content shadow border-0 rounded-3">
+
             <form action="{{ route('pendaftaran.update', $pendaftaran->id) }}" method="POST">
                 @csrf
                 @method('PUT')
@@ -13,8 +14,9 @@
                     <button class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
 
-                <!-- BODY -->
-                <div class="modal-body">
+                <!-- BODY (SCROLLABLE) -->
+                <div class="modal-body" 
+                     style="max-height: 70vh; overflow-y: auto;">
 
                     <!-- AYAH -->
                     <div class="d-flex align-items-center mb-2">

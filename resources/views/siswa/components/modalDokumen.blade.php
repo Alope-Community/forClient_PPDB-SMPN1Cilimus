@@ -1,24 +1,30 @@
 <div class="modal fade" id="modalDokumen" tabindex="-1">
     <div class="modal-dialog modal-lg modal-dialog-scrollable">
-        <div class="modal-content border-0 shadow-lg rounded-4">
+        
+        <div class="modal-content border-0 shadow-lg rounded-4" 
+             style="max-height: 90vh; display: flex; flex-direction: column;">
+
             <form 
                 action="{{ route('pendaftaran.update', $pendaftaran->id) }}" 
                 method="POST" 
                 enctype="multipart/form-data"
+                style="display: flex; flex-direction: column; height: 100%;"
             >
                 @csrf
                 @method('PUT')
 
                 <!-- HEADER -->
-                <div class="modal-header bg-primary text-white rounded-top-4">
+                <div class="modal-header bg-primary text-white rounded-top-4" 
+                     style="flex-shrink: 0;">
                     <h5 class="modal-title fw-semibold">
                         <i class="fas fa-file-alt me-2"></i> Edit Alamat & Dokumen
                     </h5>
                     <button class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
 
-                <!-- BODY -->
-                <div class="modal-body px-4 py-3">
+                <!-- BODY (SCROLLABLE) -->
+                <div class="modal-body px-4 py-3" 
+                    style="max-height: 70vh; overflow-y: auto;">
 
                     <!-- SECTION DATA KONTAK -->
                     <div class="mb-4">
@@ -87,52 +93,40 @@
 
                         <div class="row g-3">
 
-                            <!-- KIP -->
                             <div class="col-md-6">
                                 <label class="form-label small text-muted">Kartu KIP</label>
                                 <input type="file" name="kartu_kip" class="form-control">
 
-                                {{-- @if($pendaftaran->kartu_kip)
-                                    <a href="{{ asset('storage/' . $pendaftaran->kartu_kip) }}" 
-                                        target="_blank"
-                                        class="btn btn-sm btn-outline-primary mt-2">
-                                        <i class="fas fa-eye me-1"></i> Lihat File
-                                    </a>
-                                @endif --}}
                                 @if($pendaftaran->kartu_kip)
-                                    <a 
-                                        href="{{ route('dokumen.lihat', $pendaftaran->kartu_kip) }}" 
-                                        target="_blank"
-                                        class="btn btn-sm btn-outline-primary mt-2"
-                                    >
+                                    <a href="{{ route('dokumen.lihat', $pendaftaran->kartu_kip) }}" 
+                                       target="_blank"
+                                       class="btn btn-sm btn-outline-primary mt-2">
                                        <i class="fas fa-eye me-1"></i> Lihat File
                                     </a>
                                 @endif
                             </div>
 
-                            <!-- Screenshot -->
                             <div class="col-md-6">
                                 <label class="form-label small text-muted">Screenshot Jarak</label>
                                 <input type="file" name="screenshot_jarak" class="form-control">
 
                                 @if($pendaftaran->screenshot_jarak)
                                     <a href="{{ route('dokumen.lihat', $pendaftaran->screenshot_jarak) }}" 
-                                        target="_blank"
-                                        class="btn btn-sm btn-outline-primary mt-2">
+                                       target="_blank"
+                                       class="btn btn-sm btn-outline-primary mt-2">
                                         <i class="fas fa-eye me-1"></i> Lihat File
                                     </a>
                                 @endif
                             </div>
 
-                            <!-- KK -->
                             <div class="col-md-6">
                                 <label class="form-label small text-muted">Kartu Keluarga</label>
                                 <input type="file" name="kartu_keluarga" class="form-control">
 
                                 @if($pendaftaran->kartu_keluarga)
                                     <a href="{{ route('dokumen.lihat', $pendaftaran->kartu_keluarga) }}" 
-                                        target="_blank"
-                                        class="btn btn-sm btn-outline-primary mt-2">
+                                       target="_blank"
+                                       class="btn btn-sm btn-outline-primary mt-2">
                                         <i class="fas fa-eye me-1"></i> Lihat File
                                     </a>
                                 @endif
@@ -176,7 +170,8 @@
                 </div>
 
                 <!-- FOOTER -->
-                <div class="modal-footer bg-light rounded-bottom-4 px-4 py-3">
+                <div class="modal-footer bg-light rounded-bottom-4 px-4 py-3" 
+                     style="flex-shrink: 0;">
                     <button type="button" class="btn btn-light" data-bs-dismiss="modal">
                         Batal
                     </button>
@@ -184,6 +179,7 @@
                         <i class="fas fa-save me-1"></i> Simpan Perubahan
                     </button>
                 </div>
+
             </form>
         </div>
     </div>

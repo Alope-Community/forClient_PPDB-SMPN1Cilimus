@@ -1,6 +1,7 @@
 <div class="modal fade" id="modalIdentitas" tabindex="-1">
-    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+    <div class="modal-dialog modal-lg">
         <div class="modal-content border-0 shadow-lg rounded-4">
+
             <form action="{{ route('pendaftaran.update', $pendaftaran->id) }}" method="POST">
                 @csrf
                 @method('PUT')
@@ -13,8 +14,9 @@
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
 
-                <!-- BODY -->
-                <div class="modal-body px-4 py-3">
+                <!-- BODY (SCROLLABLE) -->
+                <div class="modal-body px-4 py-3" 
+                     style="max-height: 70vh; overflow-y: auto;">
 
                     <!-- DATA UTAMA -->
                     <div class="mb-4">
@@ -190,6 +192,7 @@
                         <i class="fas fa-save me-1"></i> Simpan
                     </button>
                 </div>
+
             </form>
         </div>
     </div>
