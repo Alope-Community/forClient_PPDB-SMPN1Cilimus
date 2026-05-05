@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
+use Intervention\Image\Facades\Image;
 
 class PendaftaranController extends Controller
 {
@@ -323,88 +324,277 @@ class PendaftaranController extends Controller
     }
 
 
+    // private function uploadDokumen(Request $request)
+    // {
+    //     $lzw = new \App\Services\LzwService(); // pakai service
+
+    //     $dokumen = []; // pastikan selalu array
+    //     $path = 'ppdb/smpn1-cilimus/' . date('Y/m/d');
+
+    //     $handleLZW = function ($file, $path) use ($lzw) {
+
+    //         $content = file_get_contents($file->getRealPath());
+
+    //         // pakai service
+    //         $compressed = $lzw->compress($content);
+
+    //         $filename = uniqid() . '.lzw';
+
+    //         $fullPath = storage_path('app/public/' . $path . '/' . $filename);
+
+    //         if (!file_exists(dirname($fullPath))) {
+    //             mkdir(dirname($fullPath), 0777, true);
+    //         }
+
+    //         file_put_contents($fullPath, $compressed);
+
+    //         return $path . '/' . $filename;
+    //     };
+
+    //     if ($request->hasFile('kartu_keluarga')) {
+    //         $dokumen['kartu_keluarga'] = $handleLZW($request->file('kartu_keluarga'), $path);
+    //     }
+
+    //     if ($request->hasFile('screenshot_jarak')) {
+    //         $dokumen['screenshot_jarak'] = $handleLZW($request->file('screenshot_jarak'), $path);
+    //     }
+
+    //     if ($request->hasFile('kartu_kip')) {
+    //         $dokumen['kartu_kip'] = $handleLZW($request->file('kartu_kip'), $path);
+    //     }
+
+    //     if ($request->hasFile('sertifikat_kejuaraan')) {
+    //         $dokumen['sertifikat_kejuaraan'] = $handleLZW($request->file('sertifikat_kejuaraan'), $path);
+    //     }
+
+    //     return $dokumen; 
+    // }
+
+    // private function uploadDokumen(Request $request)
+    // {
+    //     $dokumen = [];
+    //     $path = 'ppdb/smpn1-cilimus/' . date('Y/m/d');
+
+    //     $saveFile = function ($file, $path) {
+
+    //         $ext = strtolower($file->getClientOriginalExtension());
+    //         $fullPath = storage_path('app/public/' . $path);
+
+    //         if (!file_exists($fullPath)) {
+    //             mkdir($fullPath, 0777, true);
+    //         }
+
+    //         $size = $file->getSize(); // ukuran byte
+    //         $filename = uniqid();
+
+    //         // =========================
+    //         // FILE KECIL → SIMPAN ASLI
+    //         // =========================
+    //         if ($size < 300000) { // < 300KB
+    //             $name = $filename . '.' . $ext;
+    //             $file->move($fullPath, $name);
+    //             return $path . '/' . $name;
+    //         }
+
+    //         // =========================
+    //         // GAMBAR → SMART COMPRESS
+    //         // =========================
+    //         if (in_array($ext, ['jpg', 'jpeg', 'png'])) {
+
+    //             $image = Image::make($file);
+
+    //             // resize hanya jika lebih besar dari 1200px
+    //             if ($image->width() > 1200) {
+    //                 $image->resize(1200, null, function ($constraint) {
+    //                     $constraint->aspectRatio();
+    //                     $constraint->upsize();
+    //                 });
+    //             }
+
+    //             // =========================
+    //             // PNG → tetap PNG
+    //             // =========================
+    //             if ($ext === 'png') {
+    //                 $name = $filename . '.png';
+    //                 $image->encode('png', 80);
+    //             } else {
+    //                 // =========================
+    //                 // JPG → compress JPG
+    //                 // =========================
+    //                 $name = $filename . '.jpg';
+    //                 $image->encode('jpg', 75);
+    //             }
+
+    //             file_put_contents($fullPath . '/' . $name, $image);
+
+    //             return $path . '/' . $name;
+    //         }
+
+    //         // =========================
+    //         // FILE NON GAMBAR
+    //         // =========================
+    //         $name = $filename . '.' . $ext;
+    //         $file->move($fullPath, $name);
+
+    //         return $path . '/' . $name;
+    //     };
+
+    //     // =========================
+    //     // HANDLE UPLOAD
+    //     // =========================
+
+    //     if ($request->hasFile('kartu_keluarga')) {
+    //         $dokumen['kartu_keluarga'] = $saveFile($request->file('kartu_keluarga'), $path);
+    //     }
+
+    //     if ($request->hasFile('screenshot_jarak')) {
+    //         $dokumen['screenshot_jarak'] = $saveFile($request->file('screenshot_jarak'), $path);
+    //     }
+
+    //     if ($request->hasFile('kartu_kip')) {
+    //         $dokumen['kartu_kip'] = $saveFile($request->file('kartu_kip'), $path);
+    //     }
+
+    //     if ($request->hasFile('sertifikat_kejuaraan')) {
+    //         $dokumen['sertifikat_kejuaraan'] = $saveFile($request->file('sertifikat_kejuaraan'), $path);
+    //     }
+
+    //     return $dokumen;
+    // }
+
     private function uploadDokumen(Request $request)
     {
-        $lzw = new \App\Services\LzwService(); // pakai service
-
-        $dokumen = []; // pastikan selalu array
+        $dokumen = [];
         $path = 'ppdb/smpn1-cilimus/' . date('Y/m/d');
 
-        $handleLZW = function ($file, $path) use ($lzw) {
+        $lzw = new LzwService();
 
-            $content = file_get_contents($file->getRealPath());
+        $saveFile = function ($file, $path) use ($lzw) {
 
-            // pakai service
-            $compressed = $lzw->compress($content);
+            $ext = strtolower($file->getClientOriginalExtension());
+            $fullPath = storage_path('app/public/' . $path);
 
-            $filename = uniqid() . '.lzw';
-
-            $fullPath = storage_path('app/public/' . $path . '/' . $filename);
-
-            if (!file_exists(dirname($fullPath))) {
-                mkdir(dirname($fullPath), 0777, true);
+            if (!file_exists($fullPath)) {
+                mkdir($fullPath, 0777, true);
             }
 
-            file_put_contents($fullPath, $compressed);
+            $size = $file->getSize();
+            $filename = uniqid();
 
-            return $path . '/' . $filename;
+            if (in_array($ext, ['jpg', 'jpeg', 'png'])) {
+
+                $image = Image::make($file);
+
+                if ($image->width() > 1200) {
+                    $image->resize(1200, null, function ($constraint) {
+                        $constraint->aspectRatio();
+                        $constraint->upsize();
+                    });
+                }
+
+                // encode sesuai format
+                if ($ext === 'png') {
+                    $binary = (string) $image->encode('png', 80);
+                    $realExt = 'png';
+                } else {
+                    $binary = (string) $image->encode('jpg', 75);
+                    $realExt = 'jpg';
+                }
+
+                // =========================
+                // LZW COMPRESS
+                // =========================
+                $compressed = $lzw->compress($binary);
+
+                $name = $filename . '.' . $realExt . '.lzw';
+
+                file_put_contents($fullPath . '/' . $name, $compressed);
+
+                return $path . '/' . $name;
+            }
+
+            $content = file_get_contents($file->getRealPath());
+            $compressed = $lzw->compress($content);
+
+            $name = $filename . '.' . $ext . '.lzw';
+
+            file_put_contents($fullPath . '/' . $name, $compressed);
+
+            return $path . '/' . $name;
         };
 
         if ($request->hasFile('kartu_keluarga')) {
-            $dokumen['kartu_keluarga'] = $handleLZW($request->file('kartu_keluarga'), $path);
+            $dokumen['kartu_keluarga'] = $saveFile($request->file('kartu_keluarga'), $path);
         }
 
         if ($request->hasFile('screenshot_jarak')) {
-            $dokumen['screenshot_jarak'] = $handleLZW($request->file('screenshot_jarak'), $path);
+            $dokumen['screenshot_jarak'] = $saveFile($request->file('screenshot_jarak'), $path);
         }
 
         if ($request->hasFile('kartu_kip')) {
-            $dokumen['kartu_kip'] = $handleLZW($request->file('kartu_kip'), $path);
+            $dokumen['kartu_kip'] = $saveFile($request->file('kartu_kip'), $path);
         }
 
         if ($request->hasFile('sertifikat_kejuaraan')) {
-            $dokumen['sertifikat_kejuaraan'] = $handleLZW($request->file('sertifikat_kejuaraan'), $path);
+            $dokumen['sertifikat_kejuaraan'] = $saveFile($request->file('sertifikat_kejuaraan'), $path);
         }
 
-        return $dokumen; 
+        return $dokumen;
     }
 
-    public function showImage($path)
-    {
-        $path = urldecode($path);
+    // public function showImage($path)
+    // {
+    //     $path = urldecode($path);
 
-        $fullPath = storage_path('app/public/' . $path);
+    //     $fullPath = storage_path('app/public/' . $path);
 
-        // cek file ada atau tidak
-        if (!file_exists($fullPath)) {
-            abort(404, 'File tidak ditemukan');
-        }
+    //     // cek file ada atau tidak
+    //     if (!file_exists($fullPath)) {
+    //         abort(404, 'File tidak ditemukan');
+    //     }
 
-        // ambil file hasil kompresi LZW
-        $compressed = file_get_contents($fullPath);
+    //     // ambil file hasil kompresi LZW
+    //     $compressed = file_get_contents($fullPath);
 
-        // decompress
-        $lzw = new LzwService();
-        $binary = $lzw->decompress($compressed);
+    //     // decompress
+    //     $lzw = new LzwService();
+    //     $binary = $lzw->decompress($compressed);
 
-        // ambil ekstensi ASLI (dari nama sebelum .lzw)
-        $filename = pathinfo($path, PATHINFO_FILENAME); 
-        $ext = pathinfo($filename, PATHINFO_EXTENSION);
+    //     // ambil ekstensi ASLI (dari nama sebelum .lzw)
+    //     $filename = pathinfo($path, PATHINFO_FILENAME); 
+    //     $ext = pathinfo($filename, PATHINFO_EXTENSION);
 
-        if (!$ext) {
-            $ext = 'jpg';
-        }
+    //     if (!$ext) {
+    //         $ext = 'jpg';
+    //     }
 
-        $mime = match (strtolower($ext)) {
-            'png' => 'image/png',
-            'jpg', 'jpeg' => 'image/jpeg',
-            default => 'image/jpeg'
-        };
+    //     $mime = match (strtolower($ext)) {
+    //         'png' => 'image/png',
+    //         'jpg', 'jpeg' => 'image/jpeg',
+    //         default => 'image/jpeg'
+    //     };
 
-        return response($binary)
-            ->header('Content-Type', $mime)
-            ->header('Content-Disposition', 'inline; filename="preview.' . $ext . '"');
-    }
+    //     return response($binary)
+    //         ->header('Content-Type', $mime)
+    //         ->header('Content-Disposition', 'inline; filename="preview.' . $ext . '"');
+    // }
+
+//     public function showImage($path)
+// {
+//     $path = urldecode($path);
+//     $fullPath = storage_path('app/public/' . $path);
+
+//     if (!file_exists($fullPath)) {
+//         abort(404, 'File tidak ditemukan');
+//     }
+
+//     $mime = mime_content_type($fullPath);
+
+//     return response()->file($fullPath, [
+//         'Content-Type' => $mime,
+//         'Content-Disposition' => 'inline; filename="' . basename($fullPath) . '"'
+//     ]);
+// }
 
     // private function lzwDecompress($compressed)
     // {
@@ -439,41 +629,34 @@ class PendaftaranController extends Controller
     //     return $result;
     // }
 
-    // public function showImage($path)
-    // {
-    //     $path = urldecode($path);
+    public function showImage($path)
+    {
+        $path = urldecode($path);
+        $fullPath = storage_path('app/public/' . $path);
 
-    //     $fullPath = storage_path('app/public/' . $path);
+        if (!file_exists($fullPath)) {
+            abort(404, 'File tidak ditemukan');
+        }
 
-    //     // cek file ada atau tidak
-    //     if (!file_exists($fullPath)) {
-    //         abort(404, 'File tidak ditemukan');
-    //     }
+        $compressed = file_get_contents($fullPath);
 
-    //     // ambil file hasil kompresi LZW
-    //     $compressed = file_get_contents($fullPath);
+        $lzw = new \App\Services\LzwService();
+        $binary = $lzw->decompress($compressed);
 
-    //     // decompress
-    //     $binary = $this->lzwDecompress($compressed);
+        $filename = pathinfo($path, PATHINFO_FILENAME);
+        $ext = pathinfo($filename, PATHINFO_EXTENSION);
 
-    //     // ambil ekstensi ASLI (dari nama sebelum .lzw)
-    //     $filename = pathinfo($path, PATHINFO_FILENAME); 
-    //     $ext = pathinfo($filename, PATHINFO_EXTENSION);
+        $mime = match (strtolower($ext)) {
+            'png' => 'image/png',
+            'jpg', 'jpeg' => 'image/jpeg',
+            'pdf' => 'application/pdf',
+            default => 'application/octet-stream'
+        };
 
-    //     if (!$ext) {
-    //         $ext = 'jpg';
-    //     }
-
-    //     $mime = match (strtolower($ext)) {
-    //         'png' => 'image/png',
-    //         'jpg', 'jpeg' => 'image/jpeg',
-    //         default => 'image/jpeg'
-    //     };
-
-    //     return response($binary)
-    //         ->header('Content-Type', $mime)
-    //         ->header('Content-Disposition', 'inline; filename="preview.' . $ext . '"');
-    // }
+        return response($binary)
+            ->header('Content-Type', $mime)
+            ->header('Content-Disposition', 'inline; filename="preview.' . $ext . '"');
+    }
 
     // private function uploadDokumen(Request $request)
     // {
