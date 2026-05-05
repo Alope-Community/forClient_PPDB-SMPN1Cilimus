@@ -248,7 +248,7 @@
 
                             @if($pendaftaran->kartu_kip)
                                 <a 
-                                    href="{{ route('dokumen.lihat', $pendaftaran->screenshot_jarak) }}" 
+                                    href="{{ route('dokumen.lihat', $pendaftaran->kartu_kip) }}" 
                                     target="_blank"
                                     class="btn btn-sm btn-success"
                                 >
