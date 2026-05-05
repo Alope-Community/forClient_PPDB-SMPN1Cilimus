@@ -34,8 +34,14 @@
                         </button>
 
                         <a href="{{ route('admin.pendaftar.index') }}" 
-                           class="btn btn-outline-secondary">
+                        class="btn btn-outline-secondary">
                             Reset
+                        </a>
+
+                        <!-- TOMBOL EXPORT -->
+                        <a href="{{ route('admin.pendaftar.export') }}" 
+                        class="btn btn-success">
+                            <i class="fas fa-file-excel"></i> Export Excel
                         </a>
                     </div>
 

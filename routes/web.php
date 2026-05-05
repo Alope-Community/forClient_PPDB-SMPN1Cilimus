@@ -25,7 +25,7 @@ Route::get('/', function () {
 */
 Route::prefix('auth')
     ->name('auth.')
-    ->middleware('guest') // ⬅️ penting
+    ->middleware('guest') 
     ->group(function () {
         Route::get('/login', [AuthController::class, 'login'])->name('login');
         Route::post('/login', [AuthController::class, 'authenticate'])->name('authenticate');
@@ -33,17 +33,19 @@ Route::prefix('auth')
 
 /*
 |--------------------------------------------------------------------------
-| Admin (harus login)
+| Admin 
 |--------------------------------------------------------------------------
 */
 Route::prefix('admin')
     ->name('admin.')
-    ->middleware('auth') // ⬅️ wajib login
+    ->middleware('auth') 
     ->group(function () {
 
         Route::get('/dashboard', AdminDashboardCcontroller::class)->name('dashboard');
 
+        Route::get('/export/pendaftar', [AdminPendaftaranController::class, 'export'])->name('pendaftar.export');
         Route::resource('/pendaftar', AdminPendaftaranController::class);
+
     });
 
 
@@ -70,7 +72,7 @@ Route::post('/logout', function () {
 
 /*
 |--------------------------------------------------------------------------
-| Resource (harus login juga)
+| Resource 
 |--------------------------------------------------------------------------
 */
 
@@ -78,3 +80,5 @@ Route::get('dokumen/lihat/{file}', [PendaftaranController::class, 'showImage'])
     ->where('file', '.*')
     ->name('dokumen.lihat');
 Route::resource('/pendaftaran', PendaftaranController::class);
+
+
