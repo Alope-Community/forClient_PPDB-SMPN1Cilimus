@@ -81,7 +81,7 @@
                         </td>
                         <td>{{ $p->jumlah_nilai ?? '-' }}</td>
                         <td>
-                            <span class="badge bg-secondary">Menunggu</span>
+                            <span class="badge bg-secondary">{{ $p->status }}</span>
                         </td>
                     </tr>
                     @empty
