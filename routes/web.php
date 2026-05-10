@@ -30,6 +30,8 @@ Route::prefix('auth')
         Route::get('/login', [AuthController::class, 'login'])->name('login');
         Route::post('/login', [AuthController::class, 'authenticate'])->name('authenticate');
     });
+    
+Route::get('/login', [AuthController::class, 'login'])->name('login');
 
 /*
 |--------------------------------------------------------------------------
