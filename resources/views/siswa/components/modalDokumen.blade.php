@@ -132,6 +132,19 @@
                                 @endif
                             </div>
 
+                            <div class="col-md-6">
+                                <label class="form-label small text-muted">Sertifikat Kejuaraan</label>
+                                <input type="file" name="sertifikat_kejuaraan" class="form-control">
+
+                                @if($pendaftaran->jalur_pendaftaran == "prestasi_non_akademik" && $pendaftaran->sertifikat_kejuaraan)
+                                    <a href="{{ route('dokumen.lihat', $pendaftaran->sertifikat_kejuaraan) }}" 
+                                       target="_blank"
+                                       class="btn btn-sm btn-outline-primary mt-2">
+                                        <i class="fas fa-eye me-1"></i> Lihat File
+                                    </a>
+                                @endif
+                            </div>
+
                         </div>
                     </div>
 

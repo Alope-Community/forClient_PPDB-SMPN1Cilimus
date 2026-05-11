@@ -267,6 +267,31 @@
                         </div>
                         @endif
 
+                        <!-- CERT -->
+                        @if($pendaftaran->jalur_pendaftaran == 'prestasi_non_akademik')
+                        <div class="d-flex justify-content-between align-items-center border rounded px-4 py-2 hover-item">
+                            <div class="d-flex align-items-center gap-3">
+                                <i class="fas fa-trophy text-warning"></i>
+                                <div>
+                                    <div class="fw-semibold">Sertifikat Kejuaraan</div>
+                                    <small class="text-muted">Jalur Prestasi Akademis</small>
+                                </div>
+                            </div>
+
+                            @if($pendaftaran->sertifikat_kejuaraan)
+                                <a 
+                                    href="{{ route('dokumen.lihat', $pendaftaran->sertifikat_kejuaraan) }}" 
+                                    target="_blank"
+                                    class="btn btn-sm btn-success"
+                                >
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                            @else
+                                <span class="badge bg-secondary">Belum upload</span>
+                            @endif
+                        </div>
+                        @endif
+
                     </div>
                 </div>
             </div>
