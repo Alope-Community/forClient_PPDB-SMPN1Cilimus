@@ -1,6 +1,6 @@
 <nav class="navbar navbar-expand-lg navbar-light fixed-top py-3" id="mainNavbar">
     <div class="container">
-        <a class="navbar-brand text-primary fw-bold" href="/">
+        <a class="navbar-brand text-white fw-bold" href="/">
             <img src="https://smpn1cilimus.sch.id/wp-content/uploads/2021/07/Untitled-design.png" class="me-2" style="width: 40px" />
             {{ config('app.name') }}
         </a>

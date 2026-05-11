@@ -70,6 +70,10 @@
             background-color: #5b0e7f !important;
             color: #fff !important;
         }
+
+        #mainNavbar .navbar-brand.text-white {
+            color: #fff !important;
+        }
     </style>
 
     @stack('styles')
@@ -87,5 +91,19 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
     @stack('scripts')
+
+    <script>
+        window.onscroll = function() {
+            const brand = document.querySelector('#mainNavbar .navbar-brand');
+            
+            if (window.scrollY > 50) {
+                brand.classList.add('text-primary');
+                brand.classList.remove('text-white');
+            } else {
+                brand.classList.add('text-white');
+                brand.classList.remove('text-primary');
+            }
+        };
+    </script>
 </body>
 </html>
