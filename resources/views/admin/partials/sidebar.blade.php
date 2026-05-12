@@ -1,4 +1,4 @@
-<div class="sidebar p-3 d-flex flex-column">
+<div class="sidebar p-3 d-flex flex-column position-fixed vh-100" style="width: 250px; left: 0; top: 0; overflow-y: auto;">
 
     <!-- LOGO / TITLE -->
     <div class="mb-4 text-center">

@@ -15,7 +15,7 @@
         }
         nav {
             /* height: 100vh; */
-            background-color: #5b0e7f;
+            /* background-color: #5b0e7f; */
             color: #fff !important;
         }
         .sidebar {
