@@ -56,10 +56,10 @@ class PendaftaranController extends Controller
             'no_hp_orang_tua' => 'required|string|regex:/^08[0-9]{8,12}$/',
             
             // Dokumen (max 2MB)
-            'kartu_keluarga' => 'required|file|mimes:pdf,jpg,jpeg,png|max:2048',
-            'screenshot_jarak' => 'required|file|mimes:jpg,jpeg,png|max:2048',
-            'kartu_kip' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
-            'sertifikat_kejuaraan' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
+            'kartu_keluarga' => 'required|file|mimes:pdf,jpg,jpeg,png',
+            'screenshot_jarak' => 'required|file|mimes:jpg,jpeg,png',
+            'kartu_kip' => 'nullable|file|mimes:pdf,jpg,jpeg,png',
+            'sertifikat_kejuaraan' => 'nullable|file|mimes:pdf,jpg,jpeg,png',
             
             // Prestasi (khusus jalur tertentu)
             'event_kejuaraan' => 'nullable|required_if:jalur_pendaftaran,prestasi_non_akademik|string|max:255',
@@ -210,10 +210,14 @@ class PendaftaranController extends Controller
                 'sosmed' => json_encode($request->sosmed),
 
                 // DOKUMEN
-                'kartu_kip' => $dokumen['kartu_kip'] ?? null,
-                'screenshot_jarak' => $dokumen['screenshot_jarak'] ?? null,
-                'kartu_keluarga' => $dokumen['kartu_keluarga'] ?? null,
+                // 'kartu_kip' => $dokumen['kartu_kip'] ?? null,
+                // 'screenshot_jarak' => $dokumen['screenshot_jarak'] ?? null,
+                // 'kartu_keluarga' => $dokumen['kartu_keluarga'] ?? null,
 
+                'kartu_kip' => $dokumen['kartu_kip']['path'] ?? null,
+                'screenshot_jarak' => $dokumen['screenshot_jarak']['path'] ?? null,
+                'kartu_keluarga' => $dokumen['kartu_keluarga']['path'] ?? null,
+                
                 // NILAI
                 'nilai_bindo' => $request->nilai_bindo,
                 'nilai_matematika' => $request->nilai_matematika,
@@ -225,7 +229,8 @@ class PendaftaranController extends Controller
                 'tingkat_kejuaraan' => $request->tingkat_kejuaraan,
                 'peringkat_kejuaraan' => $request->peringkat_kejuaraan,
                 'penyelenggara' => $request->penyelenggara,
-                'sertifikat_kejuaraan' => $dokumen['sertifikat_kejuaraan'] ?? null,
+                // 'sertifikat_kejuaraan' => $dokumen['sertifikat_kejuaraan'] ?? null,
+                'sertifikat_kejuaraan' => $dokumen['sertifikat_kejuaraan']['path'] ?? null,
 
                 // ORANG TUA
                 'nama_ayah' => $request->nama_ayah,
@@ -243,6 +248,18 @@ class PendaftaranController extends Controller
 
                 'alamat_orang_tua' => $request->alamat_orang_tua,
                 'no_hp_orang_tua' => $request->no_hp_orang_tua,
+
+                'kk_size_awal' => $dokumen['kartu_keluarga']['original_size'] ?? null,
+                'kk_size_akhir' => $dokumen['kartu_keluarga']['compressed_size'] ?? null,
+
+                'screenshot_size_awal' => $dokumen['screenshot_jarak']['original_size'] ?? null,
+                'screenshot_size_akhir' => $dokumen['screenshot_jarak']['compressed_size'] ?? null,
+
+                'kip_size_awal' => $dokumen['kartu_kip']['original_size'] ?? null,
+                'kip_size_akhir' => $dokumen['kartu_kip']['compressed_size'] ?? null,
+
+                'sertifikat_size_awal' => $dokumen['sertifikat_kejuaraan']['original_size'] ?? null,
+                'sertifikat_size_akhir' => $dokumen['sertifikat_kejuaraan']['compressed_size'] ?? null,
             ]);
 
             DB::commit();
@@ -270,7 +287,7 @@ class PendaftaranController extends Controller
         }
     }
 
-    public function update(Request $request, $id)
+   public function update(Request $request, $id)
     {
         $pendaftaran = Pendaftaran::findOrFail($id);
 
@@ -288,41 +305,185 @@ class PendaftaranController extends Controller
             'sertifikat_kejuaraan'
         ]);
 
+        // Checkbox
         $data['pernah_paud'] = $request->has('pernah_paud') ? 1 : 0;
         $data['pernah_tk'] = $request->has('pernah_tk') ? 1 : 0;
-        $data['tidak_pernah'] = $request->has('tidak_pernah') ? 1 : 0;
+        $data['tidak_pernah_paud_tk'] = $request->has('tidak_pernah') ? 1 : 0;
 
+        // Sosmed
         $data['sosmed'] = json_encode($request->sosmed ?? []);
 
+        // Hitung total nilai otomatis
         $data['jumlah_nilai'] =
             ($request->nilai_bindo ?? 0) +
             ($request->nilai_matematika ?? 0) +
             ($request->nilai_ipa ?? 0);
 
-        if (!in_array($request->jalur_pendaftaran, ['prestasi_akademik', 'prestasi_non_akademik'])) {
+        // Reset data prestasi jika bukan jalur prestasi
+        if (!in_array($request->jalur_pendaftaran, [
+            'prestasi_akademik',
+            'prestasi_non_akademik'
+        ])) {
+
             $data['event_kejuaraan'] = null;
             $data['tingkat_kejuaraan'] = null;
-            $data['peringkat'] = null;
+            $data['peringkat_kejuaraan'] = null;
             $data['penyelenggara'] = null;
             $data['sertifikat_kejuaraan'] = null;
+
+            $data['sertifikat_size_awal'] = null;
+            $data['sertifikat_size_akhir'] = null;
         }
 
+        // Upload dokumen baru
         $dokumenBaru = $this->uploadDokumen($request);
 
         foreach ($dokumenBaru as $key => $fileBaru) {
 
-            if ($pendaftaran->$key && Storage::disk('public')->exists($pendaftaran->$key)) {
+            // Hapus file lama
+            if (
+                $pendaftaran->$key &&
+                Storage::disk('public')->exists($pendaftaran->$key)
+            ) {
                 Storage::disk('public')->delete($pendaftaran->$key);
             }
 
-            $data[$key] = $fileBaru;
+            // Simpan hanya path file
+            $data[$key] = $fileBaru['path'];
+
+            // Simpan ukuran file
+            switch ($key) {
+
+                case 'kartu_keluarga':
+
+                    $data['kk_size_awal'] =
+                        $fileBaru['original_size'];
+
+                    $data['kk_size_akhir'] =
+                        $fileBaru['compressed_size'];
+
+                    break;
+
+                case 'screenshot_jarak':
+
+                    $data['screenshot_size_awal'] =
+                        $fileBaru['original_size'];
+
+                    $data['screenshot_size_akhir'] =
+                        $fileBaru['compressed_size'];
+
+                    break;
+
+                case 'kartu_kip':
+
+                    $data['kip_size_awal'] =
+                        $fileBaru['original_size'];
+
+                    $data['kip_size_akhir'] =
+                        $fileBaru['compressed_size'];
+
+                    break;
+
+                case 'sertifikat_kejuaraan':
+
+                    $data['sertifikat_size_awal'] =
+                        $fileBaru['original_size'];
+
+                    $data['sertifikat_size_akhir'] =
+                        $fileBaru['compressed_size'];
+
+                    break;
+            }
         }
 
+        // Update database
         $pendaftaran->update($data);
 
-        return back()->with('success', 'Data berhasil diperbarui');
+        return back()->with(
+            'success',
+            'Data berhasil diperbarui'
+        );
     }
 
+    // private function uploadDokumen(Request $request)
+    // {
+    //     $dokumen = [];
+    //     $path = 'ppdb/smpn1-cilimus/' . date('Y/m/d');
+
+    //     $lzw = new LzwService();
+
+    //     $saveFile = function ($file, $path) use ($lzw) {
+
+    //         $ext = strtolower($file->getClientOriginalExtension());
+    //         $fullPath = storage_path('app/public/' . $path);
+
+    //         if (!file_exists($fullPath)) {
+    //             mkdir($fullPath, 0777, true);
+    //         }
+
+    //         $size = $file->getSize();
+    //         $filename = uniqid();
+
+    //         if (in_array($ext, ['jpg', 'jpeg', 'png'])) {
+
+    //             $image = Image::make($file);
+
+    //             if ($image->width() > 1200) {
+    //                 $image->resize(1200, null, function ($constraint) {
+    //                     $constraint->aspectRatio();
+    //                     $constraint->upsize();
+    //                 });
+    //             }
+
+    //             // encode sesuai format
+    //             if ($ext === 'png') {
+    //                 $binary = (string) $image->encode('png', 80);
+    //                 $realExt = 'png';
+    //             } else {
+    //                 $binary = (string) $image->encode('jpg', 75);
+    //                 $realExt = 'jpg';
+    //             }
+
+    //             // =========================
+    //             // LZW COMPRESS
+    //             // =========================
+    //             $compressed = $lzw->compress($binary);
+
+    //             $name = $filename . '.' . $realExt . '.lzw';
+
+    //             file_put_contents($fullPath . '/' . $name, $compressed);
+
+    //             return $path . '/' . $name;
+    //         }
+
+    //         $content = file_get_contents($file->getRealPath());
+    //         $compressed = $lzw->compress($content);
+
+    //         $name = $filename . '.' . $ext . '.lzw';
+
+    //         file_put_contents($fullPath . '/' . $name, $compressed);
+
+    //         return $path . '/' . $name;
+    //     };
+
+    //     if ($request->hasFile('kartu_keluarga')) {
+    //         $dokumen['kartu_keluarga'] = $saveFile($request->file('kartu_keluarga'), $path);
+    //     }
+
+    //     if ($request->hasFile('screenshot_jarak')) {
+    //         $dokumen['screenshot_jarak'] = $saveFile($request->file('screenshot_jarak'), $path);
+    //     }
+
+    //     if ($request->hasFile('kartu_kip')) {
+    //         $dokumen['kartu_kip'] = $saveFile($request->file('kartu_kip'), $path);
+    //     }
+
+    //     if ($request->hasFile('sertifikat_kejuaraan')) {
+    //         $dokumen['sertifikat_kejuaraan'] = $saveFile($request->file('sertifikat_kejuaraan'), $path);
+    //     }
+
+    //     return $dokumen;
+    // }
     private function uploadDokumen(Request $request)
     {
         $dokumen = [];
@@ -339,8 +500,10 @@ class PendaftaranController extends Controller
                 mkdir($fullPath, 0777, true);
             }
 
-            $size = $file->getSize();
             $filename = uniqid();
+
+            // SIZE ASLI
+            $originalSize = $file->getSize();
 
             if (in_array($ext, ['jpg', 'jpeg', 'png'])) {
 
@@ -353,7 +516,6 @@ class PendaftaranController extends Controller
                     });
                 }
 
-                // encode sesuai format
                 if ($ext === 'png') {
                     $binary = (string) $image->encode('png', 80);
                     $realExt = 'png';
@@ -362,26 +524,38 @@ class PendaftaranController extends Controller
                     $realExt = 'jpg';
                 }
 
-                // =========================
-                // LZW COMPRESS
-                // =========================
+                // KOMPRES LZW
                 $compressed = $lzw->compress($binary);
 
                 $name = $filename . '.' . $realExt . '.lzw';
 
                 file_put_contents($fullPath . '/' . $name, $compressed);
 
-                return $path . '/' . $name;
+                // SIZE SETELAH KOMPRES
+                $compressedSize = filesize($fullPath . '/' . $name);
+
+                return [
+                    'path' => $path . '/' . $name,
+                    'original_size' => $originalSize,
+                    'compressed_size' => $compressedSize,
+                ];
             }
 
             $content = file_get_contents($file->getRealPath());
+
             $compressed = $lzw->compress($content);
 
             $name = $filename . '.' . $ext . '.lzw';
 
             file_put_contents($fullPath . '/' . $name, $compressed);
 
-            return $path . '/' . $name;
+            $compressedSize = filesize($fullPath . '/' . $name);
+
+            return [
+                'path' => $path . '/' . $name,
+                'original_size' => $originalSize,
+                'compressed_size' => $compressedSize,
+            ];
         };
 
         if ($request->hasFile('kartu_keluarga')) {

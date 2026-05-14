@@ -139,35 +139,95 @@
                 <div class="card-header bg-light fw-bold">Dokumen</div>
                 <div class="card-body">
 
+                    @php
+                        function formatSize($bytes) {
+                            if (!$bytes) return '-';
+
+                            $units = ['B', 'KB', 'MB', 'GB'];
+                            $i = floor(log($bytes, 1024));
+
+                            return round($bytes / pow(1024, $i), 2) . ' ' . $units[$i];
+                        }
+                    @endphp
+
                     <div class="d-grid gap-2">
 
                         @if($pendaftaran->kartu_keluarga)
-                            <a href="{{ route('dokumen.lihat', $pendaftaran->kartu_keluarga) }}" target="_blank"
-                            class="btn btn-outline-primary btn-sm">
-                                📄 Lihat Kartu Keluarga
-                            </a>
+                            <div class="border rounded p-2">
+                                <a href="{{ route('dokumen.lihat', $pendaftaran->kartu_keluarga) }}"
+                                target="_blank"
+                                class="btn btn-outline-primary btn-sm w-100">
+                                    📄 Lihat Kartu Keluarga
+                                </a>
+
+                                <small class="text-muted d-block mt-1">
+                                    Size Awal:
+                                    {{ formatSize($pendaftaran->kk_size_awal) }}
+                                    <br>
+
+                                    Size Setelah Compress:
+                                    {{ formatSize($pendaftaran->kk_size_akhir) }}
+                                </small>
+                            </div>
                         @endif
 
                         @if($pendaftaran->screenshot_jarak)
-                            <a href="{{ route('dokumen.lihat', $pendaftaran->screenshot_jarak) }}" target="_blank"
-                            class="btn btn-outline-success btn-sm">
-                                📍 Lihat Jarak
-                            </a>
+                            <div class="border rounded p-2">
+                                <a href="{{ route('dokumen.lihat', $pendaftaran->screenshot_jarak) }}"
+                                target="_blank"
+                                class="btn btn-outline-success btn-sm w-100">
+                                    📍 Lihat Jarak
+                                </a>
+
+                                <small class="text-muted d-block mt-1">
+                                    Size Awal:
+                                    {{ formatSize($pendaftaran->screenshot_size_awal) }}
+                                    <br>
+
+                                    Size Setelah Compress:
+                                    {{ formatSize($pendaftaran->screenshot_size_akhir) }}
+                                </small>
+                            </div>
                         @endif
 
                         @if($pendaftaran->kartu_kip)
-                            <a href="{{ route('dokumen.lihat', $pendaftaran->kartu_kip) }}" target="_blank"
-                            class="btn btn-outline-warning btn-sm">
-                                💳 Lihat KIP
-                            </a>
+                            <div class="border rounded p-2">
+                                <a href="{{ route('dokumen.lihat', $pendaftaran->kartu_kip) }}"
+                                target="_blank"
+                                class="btn btn-outline-warning btn-sm w-100">
+                                    💳 Lihat KIP
+                                </a>
+
+                                <small class="text-muted d-block mt-1">
+                                    Size Awal:
+                                    {{ formatSize($pendaftaran->kip_size_awal) }}
+                                    <br>
+
+                                    Size Setelah Compress:
+                                    {{ formatSize($pendaftaran->kip_size_akhir) }}
+                                </small>
+                            </div>
                         @endif
 
                         @if($pendaftaran->sertifikat_kejuaraan)
-                            <a href="{{ route('dokumen.lihat', $pendaftaran->sertifikat_kejuaraan) }}" target="_blank"
-                            class="btn btn-outline-info btn-sm">
-                                🏆 Sertifikat Prestasi
-                            </a>
+                            <div class="border rounded p-2">
+                                <a href="{{ route('dokumen.lihat', $pendaftaran->sertifikat_kejuaraan) }}"
+                                target="_blank"
+                                class="btn btn-outline-info btn-sm w-100">
+                                    🏆 Sertifikat Prestasi
+                                </a>
+
+                                <small class="text-muted d-block mt-1">
+                                    Size Awal:
+                                    {{ formatSize($pendaftaran->sertifikat_size_awal) }}
+                                    <br>
+
+                                    Size Setelah Compress:
+                                    {{ formatSize($pendaftaran->sertifikat_size_akhir) }}
+                                </small>
+                            </div>
                         @endif
+
                     </div>
                 </div>
             </div>
