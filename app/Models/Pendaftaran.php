@@ -28,4 +28,8 @@ class Pendaftaran extends Model
     {
         return strtoupper($this->nama_lengkap);
     }
+
+    public function documentCompress() {
+        return $this->hasOne(DocumentCompress::class, 'pendaftaran_id');
+    }
 }

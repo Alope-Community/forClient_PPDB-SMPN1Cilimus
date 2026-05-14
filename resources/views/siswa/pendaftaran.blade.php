@@ -642,10 +642,10 @@
             // =========================
             document.querySelectorAll('.file-upload').forEach(input => {
                 input.addEventListener('change', function() {
-                    if (this.files[0]?.size > 2 * 1024 * 1024) {
-                        Swal.fire('Error', 'File max 2MB', 'error');
-                        this.value = '';
-                    }
+                    // if (this.files[0]?.size > 2 * 1024 * 1024) {
+                    //     Swal.fire('Error', 'File max 2MB', 'error');
+                    //     this.value = '';
+                    // }
                 });
             });
 
