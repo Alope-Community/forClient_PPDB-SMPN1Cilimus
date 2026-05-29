@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Pendaftaran;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class PendaftaranController extends Controller
 {
@@ -90,6 +91,16 @@ class PendaftaranController extends Controller
     {
         //
     }
+
+    public function exportPdf($id)
+    {
+        $pendaftaran = Pendaftaran::findOrFail($id);
+
+        $pdf = Pdf::loadView('admin.invoice-pendaftaran', compact('pendaftaran'));
+
+        return $pdf->download('invoice-pendaftaran-'.$pendaftaran->nisn.'.pdf');
+    }
+
 
     public function export()
     {

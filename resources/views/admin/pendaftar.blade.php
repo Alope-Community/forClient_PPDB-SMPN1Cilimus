@@ -109,10 +109,19 @@
                             </td>
 
                             <td>
-                                <a href="{{ route('admin.pendaftar.show', $item->id) }}" 
-                                   class="btn btn-sm btn-primary">
-                                    <i class="fas fa-eye"></i>
-                                </a>
+                                <div class="d-flex align-items-center gap-2">
+                                    <div>
+                                        <a href="{{ route('admin.pendaftar.show', $item->id) }}" 
+                                        class="btn btn-sm btn-primary">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                    </div>
+                                    @if ($item->status == 'approved')
+                                        <div>
+                                            <a href="{{ route('admin.pendaftaran.pdf', $item->id) }}" class="btn btn-danger"> Download PDF </a>
+                                        </div>
+                                    @endif
+                                <div>
                             </td>
                         </tr>
 

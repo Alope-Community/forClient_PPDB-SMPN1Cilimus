@@ -46,6 +46,7 @@ Route::prefix('admin')
         Route::get('/dashboard', AdminDashboardCcontroller::class)->name('dashboard');
 
         Route::get('/export/pendaftar', [AdminPendaftaranController::class, 'export'])->name('pendaftar.export');
+        Route::get('/pdf/pendaftar/{id}', [AdminPendaftaranController::class, 'exportPdf']) ->name('pendaftaran.pdf');
         Route::resource('/pendaftar', AdminPendaftaranController::class);
 
     });
