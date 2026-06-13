@@ -5,6 +5,7 @@ use App\Http\Controllers\Admin\PendaftaranController as AdminPendaftaranControll
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\GeolocationController;
 use App\Http\Controllers\PendaftaranController;
 use App\Models\Pendaftaran;
 use Illuminate\Support\Facades\Auth;
@@ -17,6 +18,8 @@ use Illuminate\Support\Facades\Auth;
 Route::get('/', function () {
     return view('welcome');
 })->name('index');
+
+Route::get('api/search-location', GeolocationController::class);
 
 /*
 |--------------------------------------------------------------------------

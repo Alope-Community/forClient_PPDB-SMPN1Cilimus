@@ -216,7 +216,7 @@
                                         <label class="form-label fw-semibold fs-6 required">Email Calon Peserta Didik</label>
                                         <input type="email" class="form-control form-control-lg" name="email_siswa">
                                     </div>
-                                    <div class="col-12">
+                                    {{-- <div class="col-12">
                                         <label class="form-label fw-semibold fs-6 required">Alamat Lengkap</label>
                                         <textarea class="form-control form-control-lg" rows="3" name="alamat_lengkap" 
                                             placeholder="RT. 10 RW. 05 Desa Bojong Kec. Cilimus Kab. Kuningan 45556" required></textarea>
@@ -225,6 +225,23 @@
                                         <label class="form-label fw-semibold fs-6 required">Titik Koordinat</label>
                                         <input type="text" class="form-control form-control-lg" name="titik_koordinat" 
                                             placeholder="-6.873307, 108.494803" required>
+                                    </div> --}}
+                                    <div class="col-12 mb-3">
+                                        <label class="form-label fw-semibold fs-6 required">Alamat Lengkap</label>
+                                        <textarea class="form-control form-control-lg" rows="3" name="alamat_lengkap" id="alamat_lengkap" 
+                                            placeholder="RT. 10 RW. 05 Desa Bojong Kec. Cilimus Kab. Kuningan 45556" required></textarea>
+                                        
+                                        <button type="button" id="btn-cari-koordinat" class="btn btn-primary btn-sm mt-2">
+                                            <i class="fas fa-search-location"></i> Cari Koordinat dari Alamat
+                                        </button>
+                                        <small id="error-message" class="text-danger d-block mt-1" style="display:none;"></small>
+                                    </div>
+                                
+                                    <div class="col-lg-6">
+                                        <label class="form-label fw-semibold fs-6 required">Titik Koordinat</label>
+                                        <input type="text" class="form-control form-control-lg" name="titik_koordinat" id="titik_koordinat" 
+                                            placeholder="-6.873307, 108.494803" required readonly>
+                                        <small class="text-muted">Koordinat akan terisi otomatis setelah Anda menekan tombol di atas.</small>
                                     </div>
                                     <div class="col-lg-6">
                                         <label class="form-label fw-semibold fs-6 required">Jarak Rumah ke SMPN 1 Cilimus (meter)</label>
@@ -650,6 +667,69 @@
             });
 
         });
+
+
+
+        //
+        document.getElementById('btn-cari-koordinat').addEventListener('click', function() {
+        const alamat = document.getElementById('alamat_lengkap').value;
+        const inputKoordinat = document.getElementById('titik_koordinat');
+        const errorMsg = document.getElementById('error-message');
+        const btnText = this;
+
+        // Reset pesan error dan input koordinat sebelumnya
+        errorMsg.style.display = 'none';
+        errorMsg.innerText = '';
+
+        // Validasi sederhana di frontend sebelum kirim ke server
+        if (!alamat.trim()) {
+            errorMsg.innerText = 'Silakan isi alamat lengkap terlebih dahulu.';
+            errorMsg.style.display = 'block';
+            return;
+        }
+
+        // Ubah status tombol menjadi loading
+        btnText.disabled = true;
+        btnText.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Mencari...';
+
+        // Sesuaikan URL ini dengan route API Laravel Anda
+        // Jika berada dalam satu project Laravel, bisa gunakan: "{{ url('/api/search-location') }}"
+        const apiUrl = `/api/search-location?alamat_lengkap=${encodeURIComponent(alamat)}`;
+
+        fetch(apiUrl, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(res => {
+            // Kembalikan status tombol
+            btnText.disabled = false;
+            btnText.innerHTML = '<i class="fas fa-search-location"></i> Cari Koordinat dari Alamat';
+
+            if (res.success && res.data.length > 0) {
+                // Ambil data pertama yang paling mendekati hasil pencarian LIKE
+                const lokasi = res.data[0]; 
+                
+                // Format gabungan: "latitude, longitude" sesuai dengan placeholder Anda
+                inputKoordinat.value = `${lokasi.latitude}, ${lokasi.longitude}`;
+            } else {
+                errorMsg.innerText = 'Koordinat tidak ditemukan. Pastikan format penulisan mengandung kata Desa/Kec/Kab.';
+                errorMsg.style.display = 'block';
+                inputKoordinat.value = '';
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            btnText.disabled = false;
+            btnText.innerHTML = '<i class="fas fa-search-location"></i> Cari Koordinat dari Alamat';
+            
+            errorMsg.innerText = 'Terjadi kesalahan sistem saat mencari koordinat.';
+            errorMsg.style.display = 'block';
+        });
+    });
     </script>
 </body>
 </html>
