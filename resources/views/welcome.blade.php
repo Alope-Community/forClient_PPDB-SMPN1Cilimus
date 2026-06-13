@@ -143,6 +143,38 @@
 @endpush
 
 @section('content')
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+
+<div id="hasil"></div>
+<button onclick="getLocation()">Dapatkan Lokasi Saya</button>
+
+<script>
+async function getLocation() {
+    document.getElementById('hasil').innerHTML = `<p>⏳ Mengambil lokasi...</p>`;
+
+    try {
+        const response = await fetch('https://ipapi.co/json/');
+        const data = await response.json();
+
+        document.getElementById('hasil').innerHTML = `
+            <p>✅ Berhasil!</p>
+            <p><strong>Latitude:</strong> ${data.latitude}</p>
+            <p><strong>Longitude:</strong> ${data.longitude}</p>
+            <p><strong>Kota:</strong> ${data.city}</p>
+            <p><strong>Negara:</strong> ${data.country_name}</p>
+        `;
+
+    } catch (error) {
+        document.getElementById('hasil').innerHTML = `<p>❌ Error: ${error.message}</p>`;
+    }
+}
+</script>
+
 {{-- Hero Section --}}
 <section id="home" class="hero-section">
     <div class="container">
